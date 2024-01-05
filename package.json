@@ -1,0 +1,33 @@
+{
+  "name": "onboard-gabriel-moura",
+  "version": "1.0.0",
+  "description": "Taqtile's onboarding project, developed by Gabriel Batista Moura. Its main goal is to get used to the technologies and workflow used by the team. By the end of the project, we expect a working server, able to store data in a database and CRUD that data.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --transpile-only --no-notify --exit-child src/index.ts",
+    "generate": "ts-node --transpile-only src/schema.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/indigotech/onboard-gabriel-moura.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/indigotech/onboard-gabriel-moura/issues"
+  },
+  "homepage": "https://github.com/indigotech/onboard-gabriel-moura#readme",
+  "dependencies": {
+    "apollo-server": "^3.13.0",
+    "express": "^4.18.2",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.8.0",
+    "nexus": "^1.3.0",
+    "node": "^12.22.12"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.9.5"
+  }
+}
