@@ -1,26 +1,21 @@
-var express = require("express")
-var { graphqlHTTP } = require("express-graphql")
-var { graphql, buildSchema } = require("graphql")
+import express from "express"
+import { graphqlHTTP } from "express-graphql"
+import { buildSchema } from "graphql"
 
 
-// construct schema
-var schema = buildSchema(`
+const schema = buildSchema(`
   type Query {
     hello: String
   }
 `)
 
-
-// resolver function for every endpoint (populate the data for 'hello' field whenever it is queried)
-var root = {
+const root = {
   hello: () => {
     return "Hello world!"
   },
 }
 
-
-// graphiql: true -> visualize and test queries on browser (GraphiQL)
-var app = express()
+const app = express()
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -30,7 +25,5 @@ app.use(
   })
 )
 
-
 app.listen(4000)
-console.log('Running server on http://localhost:4000/graphql')
-
+console.log("Running a GraphQL API server at http://localhost:4000/graphql")
