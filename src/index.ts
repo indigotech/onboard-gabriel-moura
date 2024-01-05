@@ -1,14 +1,14 @@
-import { ApolloServer } from "apollo-server";
-var { buildSchema } = require("graphql")
+import { ApolloServer } from "apollo-server"
+import { buildSchema } from "graphql"
 
 
-var schema = buildSchema(`
+const schema = buildSchema(`
   type Query {
     hello: String
   }
 `)
 
-var root = {
+const root = {
     hello: () => {
       return "Hello world!"
     },

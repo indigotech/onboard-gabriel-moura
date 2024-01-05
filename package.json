@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Taqtile's onboarding project, developed by Gabriel Batista Moura. Its main goal is to get used to the technologies and workflow used by the team. By the end of the project, we expect a working server, able to store data in a database and CRUD that data.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --transpile-only --no-notify --exit-child src/index.ts",
