@@ -1,21 +1,10 @@
 import { ApolloServer } from 'apollo-server';
-import { buildSchema } from 'graphql';
-
-const schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
-
-const root = {
-  hello: () => {
-    return 'Hello world!';
-  },
-};
+import { typeDefs } from './schema';
+import { resolvers } from './resolvers';
 
 export const server = new ApolloServer({
-  schema,
-  rootValue: root,
+  typeDefs,
+  resolvers,
 });
 
 const port = 3000;
