@@ -1,0 +1,22 @@
+services:
+  localdb:
+    image: postgres:16.1
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db/dumps:/app-db-dumps
+    environment:
+      - POSTGRES_USER=gbm
+      - POSTGRES_PASSWORD=123l
+      - POSTGRES_DB=localserver
+
+  testdb:
+    image: postgres:16.1
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./db/dumps:/app-db-dumps
+    environment:
+      - POSTGRES_USER=gbm
+      - POSTGRES_PASSWORD=123t
+      - POSTGRES_DB=test
