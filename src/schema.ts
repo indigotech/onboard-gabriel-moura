@@ -1,6 +1,4 @@
-import { buildSchema } from 'graphql';
-
-export const typeDefs = buildSchema(`
+export const typeDefs = `#graphql
 
 type Query {
   hello: String
@@ -11,17 +9,16 @@ type Mutation {
 }
 
 type User {
-  id: ID,
-  name: String,
-  email: String,
+  id: ID!
+  name: String!
+  email: String!
   birthDate: String
 }
 
 input UserInput {
-  name: String,
-  email: String,
-  password: String,
+  name: String!
+  email: String!
+  password: String!
   birthDate: String
 }
-
-`);
+`;
