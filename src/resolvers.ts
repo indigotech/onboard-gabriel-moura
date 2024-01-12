@@ -21,7 +21,13 @@ export const resolvers = {
       await appDataSource.initialize();
       console.log('Conectado ao db local!');
 
-      if (validateStrongPassword(args.data.password) && true) {
+      const emailsList = await appDataSource.getRepository(User).find({
+        where: {
+          email: args.data.email,
+        },
+      });
+
+      if (emailsList.length == 0 && validateStrongPassword(args.data.password)) {
         const user = new User();
         user.name = args.data.name;
         user.email = args.data.email;
@@ -39,7 +45,12 @@ export const resolvers = {
         };
       } else {
         await appDataSource.destroy();
-        throw new GraphQLError('erro: senha fraca!');
+
+        if (emailsList.length > 0) {
+          throw new GraphQLError('erro: email utilizado');
+        } else {
+          throw new GraphQLError('erro: senha fraca');
+        }
       }
     },
   },
