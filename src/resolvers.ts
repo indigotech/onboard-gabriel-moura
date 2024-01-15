@@ -18,40 +18,34 @@ export const resolvers = {
   },
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }) => {
-      await appDataSource.initialize();
-      console.log('Conectado ao db local!');
+      if (!validateStrongPassword(args.data.password)) {
+        throw new GraphQLError('erro: senha fraca');
+      }
 
-      const emailsList = await appDataSource.getRepository(User).find({
+      const existingUser = await appDataSource.getRepository(User).findOne({
         where: {
           email: args.data.email,
         },
       });
 
-      if (emailsList.length == 0 && validateStrongPassword(args.data.password)) {
-        const user = new User();
-        user.name = args.data.name;
-        user.email = args.data.email;
-        user.password = args.data.password;
-        user.birthDate = args.data.birthDate;
-
-        await appDataSource.manager.save(user);
-        await appDataSource.destroy();
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          birthDate: user.birthDate,
-        };
-      } else {
-        await appDataSource.destroy();
-
-        if (emailsList.length > 0) {
-          throw new GraphQLError('erro: email utilizado');
-        } else {
-          throw new GraphQLError('erro: senha fraca');
-        }
+      if (existingUser) {
+        throw new GraphQLError('erro: email utilizado');
       }
+
+      const user = new User();
+      user.name = args.data.name;
+      user.email = args.data.email;
+      user.password = args.data.password;
+      user.birthDate = args.data.birthDate;
+
+      const newUser = await appDataSource.getRepository(User).save(user);
+
+      return {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        birthDate: newUser.birthDate,
+      };
     },
   },
 };
