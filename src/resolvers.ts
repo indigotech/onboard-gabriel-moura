@@ -1,16 +1,5 @@
 import { User } from './user';
-import { DataSource } from 'typeorm';
-
-const AppDataSource = new DataSource({
-  type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'gbm',
-  password: '123l',
-  database: 'localserver',
-  entities: [User],
-  synchronize: true,
-});
+import { appDataSource } from './setup';
 
 interface UserInput {
   name: string;
@@ -27,17 +16,14 @@ export const resolvers = {
   },
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }) => {
-      await AppDataSource.initialize();
-      console.log('Conectado ao db local!');
-
       const user = new User();
       user.name = args.data.name;
       user.email = args.data.email;
       user.password = args.data.password;
       user.birthDate = args.data.birthDate;
 
-      await AppDataSource.manager.save(user);
-      await AppDataSource.destroy();
+      const userRepository = appDataSource.getRepository(User);
+      await userRepository.save(user);
 
       return {
         id: user.id,
