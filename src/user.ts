@@ -12,8 +12,11 @@ export class User {
   email: string;
 
   @Column()
-  password: string;
+  birthDate: string;
 
   @Column()
-  birthDate: string;
+  hashedPassword: string;
+
+  @Column()
+  salt: string;
 }

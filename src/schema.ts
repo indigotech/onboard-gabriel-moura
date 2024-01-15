@@ -13,6 +13,8 @@ type User {
   name: String!
   email: String!
   birthDate: String
+  hashedPassword: String
+  salt: String
 }
 
 input UserInput {
