@@ -4,7 +4,7 @@
   "description": "Taqtile's onboarding project, developed by Gabriel Batista Moura. Its main goal is to get used to the technologies and workflow used by the team. By the end of the project, we expect a working server, able to store data in a database and CRUD that data.",
   "main": "index.ts",
   "scripts": {
-    "test": "mocha ./test/*",
+    "test": "mocha -r ts-node/register ./src/test/index.ts",
     "dev": "ts-node-dev --transpile-only --exit-child src/index.ts",
     "pg": "ts-node-dev --transpile-only --exit-child src/add-row.ts",
     "start": "echo Hello World",
@@ -32,6 +32,7 @@
     "node": "20.10.0",
     "pg": "8.11.3",
     "postgres": "3.4.3",
+    "axios": "1.6.5",
     "reflect-metadata": "0.2.1",
     "typeorm": "0.3.19"
   },
@@ -40,7 +41,8 @@
     "@types/mocha": "10.0.6",
     "@typescript-eslint/eslint-plugin": "6.18.0",
     "@typescript-eslint/parser": "6.18.0",
-    "chai": "5.0.0",
+    "axios": "1.6.5",
+    "chai": "4.3.6",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.2",
