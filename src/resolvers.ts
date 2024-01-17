@@ -36,8 +36,7 @@ export const resolvers = {
       const user = new User();
       user.name = args.data.name;
       user.email = args.data.email;
-      user.salt = await bcrypt.genSalt();
-      user.hashedPassword = await bcrypt.hash(args.data.password, user.salt);
+      user.password = await bcrypt.hash(args.data.password, 2);
       user.birthDate = args.data.birthDate;
 
       const newUser = await appDataSource.getRepository(User).save(user);
