@@ -4,7 +4,7 @@
   "description": "Taqtile's onboarding project, developed by Gabriel Batista Moura. Its main goal is to get used to the technologies and workflow used by the team. By the end of the project, we expect a working server, able to store data in a database and CRUD that data.",
   "main": "index.ts",
   "scripts": {
-    "test": "mocha -r ts-node/register ./src/test/index.ts",
+    "test": "mocha -r ts-node/register ./src/test/chai.ts",
     "dev": "ts-node-dev --transpile-only --exit-child src/index.ts",
     "pg": "ts-node-dev --transpile-only --exit-child src/add-row.ts",
     "start": "echo Hello World",
