@@ -1,5 +1,5 @@
 import { User } from './user';
-import { appDataSource } from './setup';
+import { appDataSource } from './data-source';
 import { GraphQLError } from 'graphql';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';

@@ -1,22 +1,25 @@
 import { DataSource } from 'typeorm';
-import { User } from './user';
+import { ApolloServer } from 'apollo-server';
+import { typeDefs } from './schema';
+import { resolvers } from './resolvers';
 
-export const appDataSource = new DataSource({
-  type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'gbm',
-  password: '123l',
-  database: 'localserver',
-  entities: [User],
-  synchronize: true,
-});
-
-export const initializeConnection = async () => {
+export const initializeDbConnection = async (dataSource: DataSource) => {
   try {
-    await appDataSource.initialize();
-    console.log('Conectado ao db local!');
+    await dataSource.initialize();
+    console.log('Conectado ao db!');
   } catch (error) {
-    console.error('Erro na conexao', error);
+    console.error('Erro na conexao do db', error);
   }
+};
+
+export const launchServer = async () => {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
+
+  const port = 3000;
+
+  const { url } = await server.listen({ port });
+  console.log('Server ready at', url);
 };
