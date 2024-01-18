@@ -5,6 +5,9 @@ import { resolvers } from './resolvers';
 
 export const initializeDbConnection = async (dataSource: DataSource) => {
   try {
+    dataSource.setOptions({
+      url: process.env.URL,
+    });
     await dataSource.initialize();
     console.log('Conectado ao db!');
   } catch (error) {
