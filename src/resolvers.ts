@@ -2,6 +2,7 @@ import { User } from './user';
 import { appDataSource } from './setup';
 import { GraphQLError } from 'graphql';
 import { validateStrongPassword } from './input-validation';
+import bcrypt from 'bcrypt';
 
 interface UserInput {
   name: string;
@@ -35,7 +36,7 @@ export const resolvers = {
       const user = new User();
       user.name = args.data.name;
       user.email = args.data.email;
-      user.password = args.data.password;
+      user.password = await bcrypt.hash(args.data.password, 2);
       user.birthDate = args.data.birthDate;
 
       const newUser = await appDataSource.getRepository(User).save(user);
