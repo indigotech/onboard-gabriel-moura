@@ -4,4 +4,4 @@ before(async () => {
   await launchServer();
 });
 
-require('./chai');
+require('./hello-query');
