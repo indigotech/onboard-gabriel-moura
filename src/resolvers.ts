@@ -1,6 +1,7 @@
 import { User } from './user';
 import { dataSource } from './data-source';
 import { GraphQLError } from 'graphql';
+import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
 
@@ -20,7 +21,7 @@ export const resolvers = {
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }) => {
       if (!validateStrongPassword(args.data.password)) {
-        throw new GraphQLError('erro: senha fraca');
+        throw new CustomError(404, 'erro: senha fraca');
       }
 
       const existingUser = await dataSource.getRepository(User).findOne({
