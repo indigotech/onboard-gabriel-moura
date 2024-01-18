@@ -15,5 +15,3 @@ export const launchServer = async () => {
   const { url } = await server.listen({ port });
   console.log('Server ready at', url);
 };
-
-launchServer();
