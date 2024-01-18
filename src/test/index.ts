@@ -10,4 +10,5 @@ before(async () => {
   await launchServer();
 });
 
-require('./hello.ts');
+require('./mutation.ts');
+// require('./hello.ts');
