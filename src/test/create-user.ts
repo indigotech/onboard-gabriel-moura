@@ -1,14 +1,13 @@
 import axios from 'axios';
-import { UserInput } from './../resolvers';
+import { UserInput } from '../resolvers';
 import { dataSource } from '../data-source';
 import { User } from '../user';
-import { create } from 'domain';
 
-describe('Testing Mutation', () => {
+describe('Testing createUser Mutation', () => {
   it('should return created user on test db', async () => {
     const user: UserInput = {
       name: 'Taq',
-      email: 'taqnovo1@gmail.com.br',
+      email: 'taq@gmail.com.br',
       password: 'forte123123',
       birthDate: '01-01-2024',
     };

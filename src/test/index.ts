@@ -11,4 +11,3 @@ before(async () => {
 });
 
 require('./mutation.ts');
-// require('./hello.ts');
