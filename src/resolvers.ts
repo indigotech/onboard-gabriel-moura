@@ -1,5 +1,5 @@
 import { User } from './user';
-import { appDataSource } from './data-source';
+import { dataSource } from './data-source';
 import { GraphQLError } from 'graphql';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
@@ -23,7 +23,7 @@ export const resolvers = {
         throw new GraphQLError('erro: senha fraca');
       }
 
-      const existingUser = await appDataSource.getRepository(User).findOne({
+      const existingUser = await dataSource.getRepository(User).findOne({
         where: {
           email: args.data.email,
         },
@@ -39,7 +39,7 @@ export const resolvers = {
       user.password = await bcrypt.hash(args.data.password, 2);
       user.birthDate = args.data.birthDate;
 
-      const newUser = await appDataSource.getRepository(User).save(user);
+      const newUser = await dataSource.getRepository(User).save(user);
 
       return {
         id: newUser.id,

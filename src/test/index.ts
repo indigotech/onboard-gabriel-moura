@@ -1,12 +1,12 @@
 import { launchServer, initializeDbConnection } from './../setup';
-import { testDataSource } from '../data-source';
+import { dataSource } from '../data-source';
 import dotenv from 'dotenv';
 
 before(async () => {
   dotenv.config({
-    path: __dirname + '/./../../test.env',
+    path: 'test.env',
   });
-  await initializeDbConnection(testDataSource);
+  await initializeDbConnection(dataSource);
   await launchServer();
 });
 

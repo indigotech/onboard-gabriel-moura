@@ -14,6 +14,6 @@ describe('Testing on server', () => {
       },
     });
     console.log(response.status);
-    console.log(response.data);
+    console.log(response.data.data);
   });
 });
