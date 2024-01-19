@@ -1,17 +1,12 @@
-import { ApolloServer } from 'apollo-server';
-import { typeDefs } from './schema';
-import { resolvers } from './resolvers';
-import { initializeConnection } from './setup';
+import { initializeDbConnection, launchServer } from './setup';
+import { dataSource } from './data-source';
+import dotenv from 'dotenv';
 
-export const launchServer = async () => {
-  await initializeConnection();
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  });
+dotenv.config({});
 
-  const port = 3000;
-
-  const { url } = await server.listen({ port });
-  console.log('Server ready at', url);
+export const startApp = async () => {
+  await launchServer();
+  await initializeDbConnection(dataSource);
 };
+
+startApp();
