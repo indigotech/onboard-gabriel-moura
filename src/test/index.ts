@@ -10,4 +10,4 @@ before(async () => {
   await launchServer();
 });
 
-require('./mutation.ts');
+require('./create-user.ts');
