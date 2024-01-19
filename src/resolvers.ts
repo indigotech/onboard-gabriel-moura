@@ -14,7 +14,7 @@ interface UserInput {
 export const resolvers = {
   Query: {
     hello: () => {
-      return 'Hello World';
+      return 'Hello World!';
     },
   },
   Mutation: {
