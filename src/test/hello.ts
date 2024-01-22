@@ -1,4 +1,5 @@
 import axios from 'axios';
+import chai from 'chai';
 
 describe('Testing on server', () => {
   it('should return hello query from server', async () => {
@@ -13,7 +14,7 @@ describe('Testing on server', () => {
         `,
       },
     });
-    console.log(response.status);
+    chai.expect(response.status).to.be.equal(200);
     console.log(response.data.data);
   });
 });
