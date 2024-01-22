@@ -11,6 +11,11 @@ export interface UserInput {
   birthDate: string;
 }
 
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
 export const resolvers = {
   Query: {
     hello: () => {
@@ -48,5 +53,12 @@ export const resolvers = {
         birthDate: newUser.birthDate,
       };
     },
+
+    login: async (_parent: never, args: { data: LoginInput }) => {
+      return {
+        user: { id: 1, name: 'User Name', email: 'User E-mail', birthDate: '06-06-1000' },
+        token: 'the_token'
+      };
+    }
   },
 };

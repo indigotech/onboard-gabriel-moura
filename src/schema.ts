@@ -6,7 +6,19 @@ type Query {
 
 type Mutation {
   createUser(data: UserInput): User
+  login(data: LoginInput): Session 
 }
+
+type Session {
+  user: User
+  token: String
+}
+
+input LoginInput {
+  email: String
+  password: String
+}
+
 
 type User {
   id: ID!
