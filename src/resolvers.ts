@@ -55,8 +55,28 @@ export const resolvers = {
     },
 
     login: async (_parent: never, args: { data: LoginInput }) => {
+
+      const user = await dataSource.getRepository(User).findOne({
+        where: {
+          email: args.data.email,
+        },
+      });
+
+      if (!user) {
+        throw new CustomError(401, 'Falha de autenticação', 'Email não existe');
+      }
+
+      if (!(await bcrypt.compare(args.data.password, user.password))) {
+        throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
+      }
+
       return {
-        user: { id: 1, name: 'User Name', email: 'User E-mail', birthDate: '06-06-1000' },
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          birthDate: user.birthDate
+        },
         token: 'the_token'
       };
     }
