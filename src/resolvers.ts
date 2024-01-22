@@ -30,7 +30,7 @@ export const resolvers = {
       });
 
       if (existingUser) {
-        throw new CustomError(409, 'Email já registrado');
+        throw new CustomError(409, 'Email duplicado');
       }
 
       const user = new User();

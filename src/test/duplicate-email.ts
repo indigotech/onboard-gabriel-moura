@@ -8,38 +8,39 @@ describe('Testing Custom Error duplicate email message', () => {
   it('should return duplicate email error', async () => {
     const user: UserInput = {
       name: 'Taq',
-      email: 'taqnovo1@gmail.com.br',
+      email: 'taq@gmail.com',
       password: 'senhaforte123',
       birthDate: '01-01-2024',
     };
 
-    await dataSource.getRepository(User).save(user);
+    const dbUser = { ...user };
+
+    await dataSource.getRepository(User).save(dbUser);
 
     const response = await axios({
       url: 'http://localhost:3000',
       method: 'post',
       data: {
         query: `
-              mutation Mutation($data: UserInput) {
-                createUser(data: $data) {
-                  id
-                  name
-                  email
-                  birthDate
-                }
-              }
-            `,
+          mutation CreateUser ($data: UserInput) {
+            createUser(data: $data) {
+              id
+              name
+              email
+              birthDate
+            }
+          }
+        `,
         variables: {
-          data: {
-            user,
-          },
+          data: user,
         },
       },
     });
 
-    console.log(response.data.errors[0].message);
+    chai.expect(user.email).to.be.equal(dbUser.email);
     chai.expect(response.data.errors[0].code).to.be.equal(409);
+    chai.expect(response.data.errors[0].message).to.be.equal('Email duplicado');
 
-    await dataSource.getRepository(User).delete(user);
+    await dataSource.getRepository(User).delete(dbUser);
   });
 });
