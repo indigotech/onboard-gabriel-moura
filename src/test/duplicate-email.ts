@@ -4,7 +4,7 @@ import { UserInput } from './../resolvers';
 import { dataSource } from '../data-source';
 import { User } from '../user';
 
-describe('Testing returned Custom Error', () => {
+describe('Testing Custom Error duplicate email message', () => {
   it('should return duplicate email error', async () => {
     const user: UserInput = {
       name: 'Taq',
@@ -31,10 +31,7 @@ describe('Testing returned Custom Error', () => {
             `,
         variables: {
           data: {
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            birthDate: user.birthDate,
+            user,
           },
         },
       },
