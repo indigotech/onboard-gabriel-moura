@@ -8,7 +8,7 @@ const tryWeakPassword = async (user: UserInput) => {
     method: 'post',
     data: {
       query: `
-        mutation Mutation ($data: UserInput) {
+        mutation CreateUser ($data: UserInput) {
           createUser(data: $data) {
             id
             name
