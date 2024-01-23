@@ -11,34 +11,11 @@ const usersToTest = [
   { name: 'Taq', email: 'taq@gmail.com', password: '12345678', birthDate: '01-01-2024' },
 ];
 
-const createUser = async (user: UserInput) => {
-  const createUserResponse = await axios({
-    url: 'http://localhost:3000',
-    method: 'post',
-    data: {
-      query: `
-            mutation Mutation($data: UserInput) {
-              createUser(data: $data) {
-                id
-                name
-                email
-                birthDate
-              }
-            }
-        `,
-      variables: {
-        data: user,
-      },
-    },
+describe('Testing createUser mutation', () => {
+  afterEach(async () => {
+    await dataSource.getRepository(User).delete({});
   });
-  return createUserResponse.data;
-};
 
-afterEach(async () => {
-  await dataSource.getRepository(User).delete({});
-});
-
-describe('Testing createUser Mutation', () => {
   it('should create user successfully', async () => {
     const user = usersToTest[0];
     const createdUser = await createUser(user);
@@ -77,3 +54,26 @@ describe('Testing createUser Mutation', () => {
     expect(createdUser.errors[0].message).to.be.equal('Email duplicado');
   });
 });
+
+const createUser = async (user: UserInput) => {
+  const createUserResponse = await axios({
+    url: 'http://localhost:3000',
+    method: 'post',
+    data: {
+      query: `
+            mutation Mutation($data: UserInput) {
+              createUser(data: $data) {
+                id
+                name
+                email
+                birthDate
+              }
+            }
+        `,
+      variables: {
+        data: user,
+      },
+    },
+  });
+  return createUserResponse.data;
+};
