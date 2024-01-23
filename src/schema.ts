@@ -6,17 +6,18 @@ type Query {
 
 type Mutation {
   createUser(data: UserInput): User
-  login(data: LoginInput): Session 
+  login(data: LoginInput): Session
 }
 
 type Session {
-  user: User
-  token: String
+  user: User!
+  token: String!
 }
 
 input LoginInput {
-  email: String
-  password: String
+  email: String!
+  password: String!
+  rememberMe: Boolean
 }
 
 
