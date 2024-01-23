@@ -1,8 +1,9 @@
 import axios from 'axios';
 import chai from 'chai';
-import { UserInput } from '../resolvers';
+import { UserInput, LoginInput } from '../resolvers';
 import { dataSource } from '../data-source';
 import { User } from '../user';
+import { expect } from 'chai';
 
 const user: UserInput = {
     name: 'Usuario',
@@ -11,122 +12,95 @@ const user: UserInput = {
     birthDate: '01-01-2024',
 };
 
-const createUser = async () => {
-    const createUserResponse = await axios({
-        url: 'http://localhost:3000',
-        method: 'post',
-        data: {
-            query: `
-              mutation Mutation($data: UserInput) {
-                createUser(data: $data) {
-                  id
-                  name
-                  email
-                  birthDate
-                }
-              }
-          `,
-          variables: {
-              data: user,
-          },
-        },
-    });
-  return createUserResponse.data.data.createUser;
-}
-
 describe('Testing login mutation', () => {
-    it('should return non-existing email error', async () => {
-        const createdUser = await createUser();
-        const response = await axios({
-            url: 'http://localhost:3000',
-            method: 'post',
-            data: {
-                query: `
-                  mutation Login ($loginData: LoginInput) {
-                    login(data: $loginData) {
-                      user {
-                        id
-                        name
-                        email
-                        birthDate
-                      }
-                      token
-                    }
-                  }
-              `,
-              variables: {
-                  loginData: {email: 'nao-existe@taq.com', password: user.password},
-              },
-            },
-        });
 
-      chai.expect(response.data.errors[0].code).to.be.equal(401);
-      chai.expect(response.data.errors[0].additionalInfo).to.be.equal('Email não existe');
+  let createdUser: User;
 
-      await dataSource.getRepository(User).delete(createdUser.id);
-    });
+  beforeEach(async () => {
+    createdUser = await createUser();
+  });
+
+  afterEach(async () => {
+    await dataSource.getRepository(User).delete({});
+  });
+
+  it('should return non-existing email error', async () => {
+
+    const res = await login({ email: 'nao-existe@taq.com', password: user.password });
+
+    expect(res.errors[0].code).to.be.equal(401);
+    expect(res.errors[0].additionalInfo).to.be.equal('Email não existe'); 
+
+  });
 
   it('should return incorrect password error', async () => {
-    const createdUser = await createUser();
-    const response = await axios({
-      url: 'http://localhost:3000',
-      method: 'post',
-      data: {
-        query: `
-                  mutation Login ($loginData: LoginInput) {
-                    login(data: $loginData) {
-                      user {
-                        id
-                        name
-                        email
-                        birthDate
-                      }
-                      token
-                    }
-                  }
-              `,
-        variables: {
-          loginData: { email: user.email, password: 'senhaerrada' },
-        },
-      },
-    });
-    
-    chai.expect(user.email).to.be.equal(createdUser.email);
-    chai.expect(response.data.errors[0].code).to.be.equal(401);
-    chai.expect(response.data.errors[0].additionalInfo).to.be.equal('Senha incorreta');
 
-    await dataSource.getRepository(User).delete(createdUser.id);
+    const res = await login({ email: user.email, password: 'senhaerrada' });
+    
+    expect(user.email).to.be.equal(createdUser.email);
+    expect(res.errors[0].code).to.be.equal(401);
+    expect(res.errors[0].additionalInfo).to.be.equal('Senha incorreta');
+
   });
 
   it('should login successfully', async () => {
-    const createdUser = await createUser();
-    const response = await axios({
-      url: 'http://localhost:3000',
-      method: 'post',
-      data: {
-        query: `
-                  mutation Login ($loginData: LoginInput) {
-                    login(data: $loginData) {
-                      user {
-                        id
-                        name
-                        email
-                        birthDate
-                      }
-                      token
-                    }
-                  }
-              `,
-        variables: {
-          loginData: { email: user.email, password: user.password },
-        },
-      },
-    });
-    
-    chai.expect(createdUser.name).to.be.equal(response.data.data.login.user.name);
-    chai.expect(createdUser.email).to.be.equal(response.data.data.login.user.email);
-    chai.expect(createdUser.birthDate).to.be.equal(response.data.data.login.user.birthDate);
 
-    await dataSource.getRepository(User).delete(createdUser.id);
+    const res = await login({ email: user.email, password: user.password });
+    
+    expect(createdUser.name).to.be.equal(res.data.login.user.name);
+    expect(createdUser.email).to.be.equal(res.data.login.user.email);
+    expect(createdUser.birthDate).to.be.equal(res.data.login.user.birthDate);
+
   });
+
 });
+
+const createUser = async () => {
+  const createUserResponse = await axios({
+    url: 'http://localhost:3000',
+    method: 'post',
+    data: {
+      query: `
+        mutation Mutation($data: UserInput) {
+          createUser(data: $data) {
+            id
+            name
+            email
+            birthDate
+          }
+        }
+      `,
+      variables: {
+        data: user,
+      },
+    },
+  });
+
+  return createUserResponse.data.data.createUser;
+}
+
+const login = async (login: LoginInput) => {
+  const loginResponse = await axios({
+    url: 'http://localhost:3000',
+    method: 'post',
+    data: {
+      query: `
+        mutation Login ($loginData: LoginInput) {
+          login(data: $loginData) {
+            user {
+              id
+              name
+              email
+              birthDate
+            }
+            token
+          }
+        }
+      `,
+      variables: {
+        loginData: login,
+      },
+    },
+  });
+  return loginResponse.data;
+}
