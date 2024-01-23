@@ -10,4 +10,5 @@ before(async () => {
   await launchServer();
 });
 
-require('./create-user.ts');
+require('./hello')
+require('./create-user');
