@@ -123,9 +123,9 @@ describe('Testing login mutation', () => {
       },
     });
     
-    chai.expect(createdUser.name).to.be.equal(response.data.data.name);
-    chai.expect(createdUser.email).to.be.equal(response.data.data.email);
-    chai.expect(createdUser.birthDate).to.be.equal(response.data.data.birthDate);
+    chai.expect(createdUser.name).to.be.equal(response.data.data.login.user.name);
+    chai.expect(createdUser.email).to.be.equal(response.data.data.login.user.email);
+    chai.expect(createdUser.birthDate).to.be.equal(response.data.data.login.user.birthDate);
 
     await dataSource.getRepository(User).delete(createdUser.id);
   });
