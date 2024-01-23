@@ -4,12 +4,14 @@ import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+
 export interface UserInput {
   name: string;
   email: string;
   password: string;
   birthDate: string;
 }
+
 export interface LoginInput {
   email: string;
   password: string;
@@ -23,7 +25,15 @@ export const resolvers = {
     },
   },
   Mutation: {
-    createUser: async (_parent: never, args: { data: UserInput }) => {
+    createUser: async (_parent: never, args: { data: UserInput }, context: { token: string }) => {
+      const { token } = context;
+      
+      try {
+        jwt.verify(token, process.env.JWT_SECRET as string);
+      } catch(err) {
+        throw new CustomError(401, 'Erro de autenticação');
+      }
+      
       if (!validateStrongPassword(args.data.password)) {
         throw new CustomError(400, 'Senha fraca', 'Deve ter 6 caracteres, com no mínimo 1 letra e 1 dígito');
       }
