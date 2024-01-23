@@ -3,6 +3,8 @@ import { dataSource } from './data-source';
 import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import exp from 'constants';
 
 export interface UserInput {
   name: string;
@@ -70,11 +72,13 @@ export const resolvers = {
         throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
       }
 
+      const token = jwt.sign({email: user.email}, user.password, { expiresIn: '24h' });
+
       return {
         user: {
           user
         },
-        token: 'the_token'
+        token: token
       };
     }
   },
