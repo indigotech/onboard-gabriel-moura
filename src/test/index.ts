@@ -10,7 +10,5 @@ before(async () => {
   await launchServer();
 });
 
-require('./hello')
+require('./hello');
 require('./create-user');
-require('./duplicate-email');
-require('./weak-password');

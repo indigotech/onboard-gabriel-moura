@@ -31,7 +31,7 @@ const createUser = async (user: UserInput) => {
       },
     },
   });
-  return createUserResponse.data.data.createUser;
+  return createUserResponse.data;
 };
 
 afterEach(async () => {
@@ -43,16 +43,37 @@ describe('Testing createUser Mutation', () => {
     const user = usersToTest[0];
     const createdUser = await createUser(user);
 
-    expect(user.name).to.be.equal(createdUser.name);
-    expect(user.email).to.be.equal(createdUser.email);
-    expect(user.birthDate).to.be.equal(createdUser.birthDate);
+    expect(user.name).to.be.equal(createdUser.data.createUser.name);
+    expect(user.email).to.be.equal(createdUser.data.createUser.email);
+    expect(user.birthDate).to.be.equal(createdUser.data.createUser.birthDate);
 
     const newUser = await dataSource.getRepository(User).findOneBy({
-      id: createdUser.id,
+      id: createdUser.data.createUser.id,
     });
 
     expect(user.name).to.be.equal(newUser?.name);
     expect(user.email).to.be.equal(newUser?.email);
     expect(user.birthDate).to.be.equal(newUser?.birthDate);
+  });
+
+  it('should return weak password error', async () => {
+    for (const user of usersToTest.slice(1, 4)) {
+      const createdUser = await createUser(user);
+      expect(createdUser.errors[0].code).to.be.equal(400);
+      expect(createdUser.errors[0].message).to.be.equal('Senha fraca');
+    }
+  });
+
+  it('should return duplicate email error', async () => {
+    const user = usersToTest[0];
+
+    const dbUser = { ...user };
+    await dataSource.getRepository(User).save(dbUser);
+
+    const createdUser = await createUser(user);
+
+    expect(user.email).to.be.equal(dbUser.email);
+    expect(createdUser.errors[0].code).to.be.equal(409);
+    expect(createdUser.errors[0].message).to.be.equal('Email duplicado');
   });
 });
