@@ -4,10 +4,11 @@ import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 
 export const initializeDbConnection = async (dataSource: DataSource) => {
-  dataSource.setOptions({
-    url: process.env.URL,
-  });
-  await dataSource.initialize();
+  await dataSource
+    .setOptions({
+      url: process.env.URL,
+    })
+    .initialize();
   console.log('Conectado ao db!');
 };
 

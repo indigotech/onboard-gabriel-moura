@@ -4,7 +4,7 @@ import { GraphQLError } from 'graphql';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
 
-interface UserInput {
+export interface UserInput {
   name: string;
   email: string;
   password: string;
