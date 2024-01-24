@@ -12,6 +12,7 @@ const usersToTest = [
 ];
 
 describe('Testing createUser mutation', () => {
+  
   afterEach(async () => {
     await dataSource.getRepository(User).delete({});
   });
@@ -45,7 +46,7 @@ describe('Testing createUser mutation', () => {
     const user = usersToTest[0];
 
     const dbUser = { ...user };
-    await dataSource.getRepository(User).save(dbUser);
+    dataSource.getRepository(User).save(dbUser);
 
     const createdUser = await createUser(user);
 
@@ -53,6 +54,7 @@ describe('Testing createUser mutation', () => {
     expect(createdUser.errors[0].code).to.be.equal(409);
     expect(createdUser.errors[0].message).to.be.equal('Email duplicado');
   });
+  
 });
 
 const createUser = async (user: UserInput) => {

@@ -11,6 +11,11 @@ export interface UserInput {
   birthDate: string;
 }
 
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
 export const resolvers = {
   Query: {
     hello: () => {
@@ -48,5 +53,29 @@ export const resolvers = {
         birthDate: newUser.birthDate,
       };
     },
+
+    login: async (_parent: never, args: { data: LoginInput }) => {
+
+      const user = await dataSource.getRepository(User).findOne({
+        where: {
+          email: args.data.email,
+        },
+      });
+
+      if (!user) {
+        throw new CustomError(401, 'Falha de autenticação', 'Email não existe');
+      }
+
+      if (!(await bcrypt.compare(args.data.password, user.password))) {
+        throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
+      }
+
+      return {
+        user: {
+          user
+        },
+        token: 'the_token'
+      };
+    }
   },
 };
