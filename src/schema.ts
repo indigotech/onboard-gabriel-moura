@@ -2,6 +2,7 @@ export const typeDefs = `#graphql
 
 type Query {
   hello: String
+  user(id: ID): User
 }
 
 type Mutation {

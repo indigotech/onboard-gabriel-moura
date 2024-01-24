@@ -23,6 +23,17 @@ export const resolvers = {
     hello: () => {
       return 'Hello World!';
     },
+    user: async ( args: { id: number } ) => {
+      const user = await dataSource.getRepository(User).findOneBy({
+        id: args.id,
+      });
+
+      if (!user) {
+        throw new CustomError(400, 'Usuário não existe');
+      }
+
+      return user;
+    },
   },
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }, context: { token: string }) => {
@@ -56,12 +67,7 @@ export const resolvers = {
 
       const newUser = await dataSource.getRepository(User).save(user);
 
-      return {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        birthDate: newUser.birthDate,
-      };
+      return newUser;
     },
 
     login: async (_parent: never, args: { data: LoginInput }) => {
