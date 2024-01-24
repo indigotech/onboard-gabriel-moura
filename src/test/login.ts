@@ -56,27 +56,7 @@ describe('Testing login mutation', () => {
 });
 
 const createUser = async () => {
-  const createUserResponse = await axios({
-    url: 'http://localhost:3000',
-    method: 'post',
-    data: {
-      query: `
-        mutation Mutation($data: UserInput) {
-          createUser(data: $data) {
-            id
-            name
-            email
-            birthDate
-          }
-        }
-      `,
-      variables: {
-        data: user,
-      },
-    },
-  });
-
-  return createUserResponse.data.data.createUser;
+  return await dataSource.getRepository(User).save(user);
 }
 
 const login = async (login: LoginInput) => {
