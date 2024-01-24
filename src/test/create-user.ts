@@ -46,7 +46,7 @@ describe('Testing createUser mutation', () => {
     const user = usersToTest[0];
 
     const dbUser = { ...user };
-    await dataSource.getRepository(User).save(dbUser);
+    dataSource.getRepository(User).save(dbUser);
 
     const createdUser = await createUser(user);
 

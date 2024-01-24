@@ -72,10 +72,7 @@ export const resolvers = {
 
       return {
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          birthDate: user.birthDate
+          user
         },
         token: 'the_token'
       };

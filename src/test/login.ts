@@ -65,8 +65,8 @@ const createUser = async () => {
   newUser.password = await bcrypt.hash(user.password, 2);
   newUser.birthDate = user.birthDate;
 
-  return await dataSource.getRepository(User).save(newUser);
-}
+  return dataSource.getRepository(User).save(newUser);
+};
 
 const login = async (login: LoginInput) => {
   const loginResponse = await axios({
@@ -92,4 +92,4 @@ const login = async (login: LoginInput) => {
     },
   });
   return loginResponse.data;
-}
+};
