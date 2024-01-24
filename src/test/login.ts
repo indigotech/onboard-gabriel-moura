@@ -48,7 +48,7 @@ describe('Testing login mutation', () => {
 
     const res = await login({ email: user.email, password: user.password });
     
-    expect(createdUser.id.toString()).to.be.equal(res.data.login.user.id);
+    expect(createdUser.id).to.be.equal(+res.data.login.user.id);
     expect(createdUser.name).to.be.equal(res.data.login.user.name);
     expect(createdUser.email).to.be.equal(res.data.login.user.email);
     expect(createdUser.birthDate).to.be.equal(res.data.login.user.birthDate);
