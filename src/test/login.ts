@@ -4,6 +4,7 @@ import { UserInput, LoginInput } from '../resolvers';
 import { dataSource } from '../data-source';
 import { User } from '../user';
 import { expect } from 'chai';
+import bcrypt from 'bcrypt';
 
 const user: UserInput = {
     name: 'Usuario',
@@ -47,6 +48,7 @@ describe('Testing login mutation', () => {
 
     const res = await login({ email: user.email, password: user.password });
     
+    expect(createdUser.id.toString()).to.be.equal(res.data.login.user.id);
     expect(createdUser.name).to.be.equal(res.data.login.user.name);
     expect(createdUser.email).to.be.equal(res.data.login.user.email);
     expect(createdUser.birthDate).to.be.equal(res.data.login.user.birthDate);
@@ -56,7 +58,14 @@ describe('Testing login mutation', () => {
 });
 
 const createUser = async () => {
-  return await dataSource.getRepository(User).save(user);
+
+  const newUser = new User();
+  newUser.name = user.name;
+  newUser.email = user.email;
+  newUser.password = await bcrypt.hash(user.password, 2);
+  newUser.birthDate = user.birthDate;
+
+  return await dataSource.getRepository(User).save(newUser);
 }
 
 const login = async (login: LoginInput) => {
