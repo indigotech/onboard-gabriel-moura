@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { expect } from 'chai';
 
 describe('Testing on server', () => {
   it('should return hello query from server', async () => {
@@ -13,7 +14,7 @@ describe('Testing on server', () => {
         `,
       },
     });
-    console.log(response.status);
-    console.log(response.data.data);
+    expect(response.status).to.be.equal(200);
+    expect(response.data.data.hello).to.be.equal('Hello World!');
   });
 });
