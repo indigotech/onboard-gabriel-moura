@@ -24,7 +24,10 @@ export const resolvers = {
     hello: () => {
       return 'Hello World!';
     },
-    user: async ( args: { id: number } ) => {
+
+    user: async (_parent: never, args: { id: number }, context: { token: string }) => {
+      await authLogin(context);
+
       const user = await dataSource.getRepository(User).findOneBy({
         id: args.id,
       });
@@ -36,9 +39,9 @@ export const resolvers = {
       return user;
     },
   },
+
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }, context: { token: string }) => {
-      
       await authLogin(context);
 
       if (!validateStrongPassword(args.data.password)) {
