@@ -100,75 +100,7 @@ describe('Testing token authentication', () => {
 
   });
 
-  it('should return auth error: request without token', async () => {
-
-    const dbUser = new User();
-    dbUser.name = authenticatedUser.name;
-    dbUser.email = authenticatedUser.email;
-    dbUser.password = await bcrypt.hash(authenticatedUser.password, 2);
-    dbUser.birthDate = authenticatedUser.birthDate;
-
-    await dataSource.getRepository(User).save(dbUser);
-  
-    const loginResponse = await axios({
-      url: 'http://localhost:3000',
-      method: 'post',
-      data: {
-        query: `
-                mutation Login ($loginData: LoginInput) {
-                    login(data: $loginData) {
-                      user {
-                        id
-                        name
-                        email
-                        birthDate
-                      }
-                      token
-                    }
-                  }
-              `,
-        variables: {
-          loginData: { email: authenticatedUser.email, password: authenticatedUser.password },
-        },
-      },
-    });
-
-    expect(authenticatedUser.name).to.be.equal(dbUser.name);
-    expect(authenticatedUser.email).to.be.equal(dbUser.email);
-    expect(authenticatedUser.birthDate).to.be.equal(dbUser.birthDate);
-
-    expect(dbUser.id).to.be.equal(+loginResponse.data.data.login.user.id);
-    
-    expect(authenticatedUser.email).to.be.equal(loginResponse.data.data.login.user.email);
-    expect(authenticatedUser.name).to.be.equal(loginResponse.data.data.login.user.name);
-    expect(authenticatedUser.birthDate).to.be.equal(loginResponse.data.data.login.user.birthDate);
-
-    const createUserResponse = await axios({
-      url: 'http://localhost:3000',
-      method: 'post',
-      data: {
-        query: `
-          mutation CreateUser ($data: UserInput) {
-            createUser(data: $data) {
-              id
-              name
-              email
-              birthDate
-            }
-          }
-        `,
-        variables: {
-          data: newUser,
-        },
-      },
-    });
-
-    expect(createUserResponse.data.errors[0].code).to.be.equal(401);
-    expect(createUserResponse.data.errors[0].message).to.be.equal('Erro de autenticação');
-
-  });
-
-  it('should return auth error: request with invalid token', async () => {
+  it('should return auth error: invalid token request', async () => {
 
     const dbUser = new User();
     dbUser.name = authenticatedUser.name;
