@@ -69,8 +69,12 @@ export const resolvers = {
         throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
       }
 
-      const token = jwt.sign({ email: user.password }, user.password, args.data.rememberMe ? { expiresIn: '7d' } : { expiresIn: '1h' } );
-      
+      const token = jwt.sign(
+        { email: user.email, password: user.password },
+        process.env.JWT_SECRET as string,
+        args.data.rememberMe ? { expiresIn: '7d' } : { expiresIn: '1h' },
+      );
+
       return {
         user: {
           id: user.id,
