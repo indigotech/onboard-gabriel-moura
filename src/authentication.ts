@@ -7,6 +7,6 @@ export const authLogin = async (context: { token: string }) => {
   try {
     verify(token, process.env.JWT_SECRET as string);
   } catch (err) {
-    throw new CustomError(401, 'Erro de autenticação');
+    throw new CustomError(401, 'Falha de autenticação');
   }
 };
