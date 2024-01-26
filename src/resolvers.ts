@@ -38,6 +38,29 @@ export const resolvers = {
 
       return user;
     },
+
+    users: async (_parent: never, args: { maxUsers?: number }, context: { token: string }) => {
+      await authLogin(context);
+
+      const max = args.maxUsers ? args.maxUsers : 50;
+
+      const users = await dataSource.getRepository(User).find({
+          take: max,
+        }
+      );
+      
+      users.sort((a: User, b: User) => {
+        if (a.name.toUpperCase() < b.name.toUpperCase()) {
+          return -1;
+        }
+        if (a.name.toUpperCase() > b.name.toUpperCase()) {
+          return 1;
+        }
+        return 0;
+      });
+
+      return users;
+    },
   },
 
   Mutation: {

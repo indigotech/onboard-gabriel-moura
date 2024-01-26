@@ -3,6 +3,7 @@ export const typeDefs = `#graphql
 type Query {
   hello: String
   user(id: ID): User
+  users(maxUsers: Int): [User]
 }
 
 type Mutation {
