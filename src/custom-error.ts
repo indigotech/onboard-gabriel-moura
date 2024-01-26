@@ -23,6 +23,7 @@ export const formatError = (error: GraphQLError) => {
   
   return {
     code: 500,
-    message: 'Internal error',
+    message: 'Erro interno',
   };
+
 };
