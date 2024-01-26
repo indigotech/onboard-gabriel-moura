@@ -41,6 +41,15 @@ describe('Testing createUser mutation', () => {
     expect(user.birthDate).to.be.equal(newUser?.birthDate);
   });
 
+  it('should return auth error', async () => {
+    const invalid_token = token + 'invalid';
+    for (const user of usersToTest) {
+      const createdUser = await createUser(user, invalid_token);
+      expect(createdUser.errors[0].code).to.be.equal(401);
+      expect(createdUser.errors[0].message).to.be.equal('Erro de autenticação');
+    }
+  });
+
   it('should return weak password error', async () => {
     for (const user of usersToTest.slice(1, 4)) {
       const createdUser = await createUser(user, token);
