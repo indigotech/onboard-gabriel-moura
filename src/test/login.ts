@@ -53,6 +53,8 @@ describe('Testing login mutation', () => {
     expect(createdUser.email).to.be.equal(res.data.login.user.email);
     expect(createdUser.birthDate).to.be.equal(res.data.login.user.birthDate);
 
+    expect(res.data.login.token).to.be.a('string');
+
   });
 
 });
