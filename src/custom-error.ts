@@ -12,10 +12,17 @@ export class CustomError extends Error {
 }
 
 export const formatError = (error: GraphQLError) => {
-  const formattedError = error.originalError as CustomError;
+  if (error.originalError instanceof CustomError) {
+    const formattedError = error.originalError as CustomError;
+    return {
+      code: formattedError.code,
+      message: formattedError.message,
+      additionalInfo: formattedError?.additionalInfo,
+    };
+  }
+  
   return {
-    code: formattedError.code,
-    message: formattedError.message,
-    additionalInfo: formattedError?.additionalInfo,
+    code: 500,
+    message: 'Internal error',
   };
 };
