@@ -48,10 +48,9 @@ describe('Testing login mutation', () => {
     expect(createdUser.birthDate).to.be.equal(res.data.login.user.birthDate);
 
     const payload = jwt.verify(res.data.login.token, process.env.JWT_SECRET as string) as {
-      email: string;
-      password: string;
-      iat: number;
-      exp: number;
+      email: string,
+      password: string,
+      [key: string]: any
     };
     expect(payload.email).to.be.equal(createdUser.email);
     expect(payload.password).to.be.equal(createdUser.password);
