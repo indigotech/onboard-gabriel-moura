@@ -1,7 +1,7 @@
 import { verify } from 'jsonwebtoken';
 import { CustomError } from './custom-error';
 
-export const authLogin = async (context: { token: string }) => {
+export const validateContext = async (context: { token: string }) => {
   const { token } = context;
 
   try {

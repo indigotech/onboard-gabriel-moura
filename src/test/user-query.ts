@@ -37,10 +37,6 @@ describe('Testing user query', () => {
       birthDate: authenticatedUser.birthDate,
     });
 
-    expect(newUser.name).to.be.equal(authenticatedUser.name);
-    expect(newUser.email).to.be.equal(authenticatedUser.email);
-    expect(newUser.birthDate).to.be.equal(authenticatedUser.birthDate);
-
     const res = await axios({
       url: 'http://localhost:3000',
       method: 'post',
@@ -69,16 +65,9 @@ describe('Testing user query', () => {
     expect(newUser.email).to.be.equal(res.data.data.user.email);
     expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
 
-    const payload = verify(token, process.env.JWT_SECRET as string) as {
-      email: string,
-      [key: string]: any,
-    };
-
-    expect(payload.email).to.be.equal(newUser.email);
-
   });
 
-  it('should return auth error', async () => {
+  it('should return auth error: missing token', async () => {
       
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
@@ -86,10 +75,6 @@ describe('Testing user query', () => {
       password: await bcrypt.hash(authenticatedUser.password, 2),
       birthDate: authenticatedUser.birthDate,
     });
-
-    expect(newUser.name).to.be.equal(authenticatedUser.name);
-    expect(newUser.email).to.be.equal(authenticatedUser.email);
-    expect(newUser.birthDate).to.be.equal(authenticatedUser.birthDate);
 
     const res = await axios({
       url: 'http://localhost:3000',
@@ -117,7 +102,7 @@ describe('Testing user query', () => {
     expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
   });
 
-  it('should return bad request error, invalid id', async () => {
+  it('should return auth error: invalid token', async () => {
       
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
@@ -126,9 +111,41 @@ describe('Testing user query', () => {
       birthDate: authenticatedUser.birthDate,
     });
 
-    expect(newUser.name).to.be.equal(authenticatedUser.name);
-    expect(newUser.email).to.be.equal(authenticatedUser.email);
-    expect(newUser.birthDate).to.be.equal(authenticatedUser.birthDate);
+    const res = await axios({
+      url: 'http://localhost:3000',
+      method: 'post',
+      headers: {
+        Authorization: token + 'invalid_token',
+      },
+      data: {
+          query: `
+              query User ($id: ID) {
+                  user(id: $id) {
+                      id
+                      name
+                      email
+                      birthDate
+                  }
+              }
+          `,
+          variables: {
+            id: newUser.id,
+          },
+      },
+    });
+
+    expect(res.data.errors[0].code).to.be.equal(401);
+    expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
+  });
+
+  it('should return not found error, invalid id', async () => {
+      
+    const newUser = await dataSource.getRepository(User).save({
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      password: await bcrypt.hash(authenticatedUser.password, 2),
+      birthDate: authenticatedUser.birthDate,
+    });
 
     const res = await axios({
       url: 'http://localhost:3000',
@@ -153,7 +170,7 @@ describe('Testing user query', () => {
       },
     });
 
-    expect(res.data.errors[0].code).to.be.equal(400);
-    expect(res.data.errors[0].message).to.be.equal('ID inválido');
+    expect(res.data.errors[0].code).to.be.equal(404);
+    expect(res.data.errors[0].message).to.be.equal('Usuário não encontrado');
   });
 });

@@ -4,7 +4,7 @@ import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { authLogin } from './authentication';
+import { validateContext } from './authentication';
 
 export interface UserInput {
   name: string;
@@ -26,14 +26,14 @@ export const resolvers = {
     },
 
     user: async (_parent: never, args: { id: number }, context: { token: string }) => {
-      await authLogin(context);
+      await validateContext(context);
 
       const user = await dataSource.getRepository(User).findOneBy({
         id: args.id,
       });
 
       if (!user) {
-        throw new CustomError(400, 'ID inválido');
+        throw new CustomError(404, 'Usuário não encontrado');
       }
 
       return user;
@@ -42,7 +42,7 @@ export const resolvers = {
 
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }, context: { token: string }) => {
-      await authLogin(context);
+      await validateContext(context);
 
       if (!validateStrongPassword(args.data.password)) {
         throw new CustomError(400, 'Senha fraca', 'Deve ter 6 caracteres, com no mínimo 1 letra e 1 dígito');
