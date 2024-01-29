@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/indigotech/onboard-gabriel-moura#readme",
   "dependencies": {
+    "@types/jsonwebtoken": "9.0.5",
     "apollo-server": "3.13.0",
     "axios": "1.6.5",
     "bcrypt": "5.1.1",
@@ -30,6 +31,7 @@
     "express": "4.18.2",
     "express-graphql": "0.12.0",
     "graphql": "15.8.0",
+    "jsonwebtoken": "9.0.2",
     "nexus": "1.3.0",
     "node": "20.10.0",
     "pg": "8.11.3",

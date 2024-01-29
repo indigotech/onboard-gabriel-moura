@@ -3,17 +3,17 @@ import { dataSource } from './data-source';
 import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
 export interface UserInput {
   name: string;
   email: string;
   password: string;
   birthDate: string;
 }
-
 export interface LoginInput {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export const resolvers = {
@@ -55,7 +55,6 @@ export const resolvers = {
     },
 
     login: async (_parent: never, args: { data: LoginInput }) => {
-
       const user = await dataSource.getRepository(User).findOne({
         where: {
           email: args.data.email,
@@ -70,12 +69,21 @@ export const resolvers = {
         throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
       }
 
+      const token = jwt.sign(
+        { email: user.email, id: user.id },
+        process.env.JWT_SECRET as string,
+        args.data.rememberMe ? { expiresIn: '7d' } : { expiresIn: '1h' },
+      );
+
       return {
         user: {
-          user
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          birthDate: user.birthDate,
         },
-        token: 'the_token'
+        token: token,
       };
-    }
+    },
   },
 };
