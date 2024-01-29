@@ -70,8 +70,8 @@ describe('Testing user query', () => {
     expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
 
     const payload = verify(token, process.env.JWT_SECRET as string) as {
-      email: string;
-      [key: string]: any;
+      email: string,
+      [key: string]: any,
     };
 
     expect(payload.email).to.be.equal(newUser.email);
