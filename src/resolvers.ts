@@ -39,22 +39,38 @@ export const resolvers = {
       return user;
     },
 
-    users: async (_parent: never, args: { maxUsers?: number }, context: { token: string }) => {
+    users: async (_parent: never, args: { maxUsers?: number, step?: number }, context: { token: string }) => {
       await validateContext(context);
 
       const max = args.maxUsers ? args.maxUsers : 10;
-      if (args.maxUsers == 0) {
-        return [];
-      }
+      const step = args.step ? args.step : 0;
+      const totalUsers = await dataSource.getRepository(User).count();
+
+      if (step >= totalUsers) {
+        throw new CustomError(400, 'Erro ao acessar usuário');
+      };
 
       const users = await dataSource.getRepository(User).find({
-        take: max,
-        order: {
-          name: 'ASC',
+          skip: step,
+          take: max,
         }
-      });
+      );
 
-      return users;
+      const nextUser = await dataSource.getRepository(User).findOne({
+          where: {
+            id: users[users.length - 1].id + 1,
+          },
+        }
+      );
+
+      const after = nextUser ? true : false;
+      
+      return {
+        users: users,
+        totalUsers: totalUsers,
+        before: step,
+        after: after,
+      };
     },
   },
 
