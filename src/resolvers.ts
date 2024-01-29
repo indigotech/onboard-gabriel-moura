@@ -42,7 +42,7 @@ export const resolvers = {
     users: async (_parent: never, args: { maxUsers?: number }, context: { token: string }) => {
       await authLogin(context);
 
-      const max = args.maxUsers ? args.maxUsers : 50;
+      const max = args.maxUsers ? args.maxUsers : 10;
 
       const users = await dataSource.getRepository(User).find({
           take: max,
