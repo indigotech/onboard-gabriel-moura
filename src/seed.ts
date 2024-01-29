@@ -1,31 +1,35 @@
 import { initializeDbConnection } from './setup';
 import { dataSource } from './data-source';
 import { faker } from '@faker-js/faker';
-import bcrypt from 'bcrypt';
 import { User } from './user';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 
 dotenv.config({});
 
-const createFakeUser = async () => {
-    const user = new User();
-    user.name = faker.person.fullName();
-    user.email = faker.internet.email();
-    user.password = await bcrypt.hash(faker.internet.password(), 2);
-    user.birthDate = faker.date.birthdate().toString();
+export const createFakeUser = async (i: number) => {
 
-    return user;
+  return {
+    name: faker.person.fullName(),
+    email: 'newuser' + i + '@taq.com',
+    password: await bcrypt.hash('senhaforte123' + i, 2),
+    birthDate: faker.date.birthdate().toString()
+  };
+
 };
 
 export const populateDb = async () => {
-    await initializeDbConnection(dataSource);
-    for (let i = 0; i < 100; i++) {
-      const user = await createFakeUser();
-      await dataSource.getRepository(User).save(user);
-    }
+
+  await initializeDbConnection(dataSource);
+  const users = [];
+
+  for (let i = 0; i < 100; i++) {
+    const user = await createFakeUser(i);
+    users.push(user);
+  }
+
+  await dataSource.getRepository(User).save(users);
+  
 };
 
 populateDb();
-
-
-
