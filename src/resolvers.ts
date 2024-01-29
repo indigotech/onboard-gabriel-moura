@@ -33,7 +33,7 @@ export const resolvers = {
       });
 
       if (!user) {
-        throw new CustomError(400, 'Usuário não existe');
+        throw new CustomError(400, 'ID inválido');
       }
 
       return user;
@@ -77,11 +77,11 @@ export const resolvers = {
       });
 
       if (!user) {
-        throw new CustomError(401, 'Falha de autenticação', 'Email não existe');
+        throw new CustomError(401, 'Erro de autenticação', 'Email não existe');
       }
 
       if (!(await bcrypt.compare(args.data.password, user.password))) {
-        throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
+        throw new CustomError(401, 'Erro de autenticação', 'Senha incorreta');
       }
 
       const token = jwt.sign(

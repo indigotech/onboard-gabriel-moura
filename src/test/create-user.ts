@@ -13,13 +13,12 @@ const usersToTest = [
 ];
 
 describe('Testing createUser mutation', () => {
-  
   let token: string;
 
   beforeEach(async () => {
     token = jwt.sign('auth_token', process.env.JWT_SECRET as string);
   });
-  
+
   afterEach(async () => {
     await dataSource.getRepository(User).delete({});
   });
@@ -70,7 +69,6 @@ describe('Testing createUser mutation', () => {
     expect(createdUser.errors[0].code).to.be.equal(409);
     expect(createdUser.errors[0].message).to.be.equal('Email duplicado');
   });
-  
 });
 
 const createUser = async (user: UserInput, token: string) => {
@@ -78,7 +76,7 @@ const createUser = async (user: UserInput, token: string) => {
     url: 'http://localhost:3000',
     method: 'post',
     headers: {
-      Authorization: token
+      Authorization: token,
     },
     data: {
       query: `

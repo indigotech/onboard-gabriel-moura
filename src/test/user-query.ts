@@ -30,20 +30,18 @@ describe('Testing user query', () => {
 
   it('should return user info succesfully', async () => {
       
-    const user = new User();
-    user.name = authenticatedUser.name;
-    user.email = authenticatedUser.email;
-    user.password = await bcrypt.hash(authenticatedUser.password, 2);
-    user.birthDate = authenticatedUser.birthDate;
-
-    const newUser = await dataSource.getRepository(User).save(user);
+    const newUser = await dataSource.getRepository(User).save({
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      password: await bcrypt.hash(authenticatedUser.password, 2),
+      birthDate: authenticatedUser.birthDate,
+    });
 
     expect(newUser.name).to.be.equal(authenticatedUser.name);
     expect(newUser.email).to.be.equal(authenticatedUser.email);
     expect(newUser.birthDate).to.be.equal(authenticatedUser.birthDate);
-    expect(newUser.id).to.be.a('number');
 
-    const response = await axios({
+    const res = await axios({
       url: 'http://localhost:3000',
       method: 'post',
       headers: {
@@ -66,29 +64,27 @@ describe('Testing user query', () => {
       },
     });
 
-    expect(newUser.id).to.be.equal(+response.data.data.user.id);
-    expect(newUser.name).to.be.equal(response.data.data.user.name);
-    expect(newUser.email).to.be.equal(response.data.data.user.email);
-    expect(newUser.birthDate).to.be.equal(response.data.data.user.birthDate);
+    expect(newUser.id).to.be.equal(+res.data.data.user.id);
+    expect(newUser.name).to.be.equal(res.data.data.user.name);
+    expect(newUser.email).to.be.equal(res.data.data.user.email);
+    expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
 
   });
 
   it('should return auth error', async () => {
       
-    const user = new User();
-    user.name = authenticatedUser.name;
-    user.email = authenticatedUser.email;
-    user.password = await bcrypt.hash(authenticatedUser.password, 2);
-    user.birthDate = authenticatedUser.birthDate;
-
-    const newUser = await dataSource.getRepository(User).save(user);
+    const newUser = await dataSource.getRepository(User).save({
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      password: await bcrypt.hash(authenticatedUser.password, 2),
+      birthDate: authenticatedUser.birthDate,
+    });
 
     expect(newUser.name).to.be.equal(authenticatedUser.name);
     expect(newUser.email).to.be.equal(authenticatedUser.email);
     expect(newUser.birthDate).to.be.equal(authenticatedUser.birthDate);
-    expect(newUser.id).to.be.a('number');
 
-    const response = await axios({
+    const res = await axios({
       url: 'http://localhost:3000',
       method: 'post',
       headers: {
@@ -110,26 +106,24 @@ describe('Testing user query', () => {
       },
     });
 
-    expect(response.data.errors[0].code).to.be.equal(401);
-    expect(response.data.errors[0].message).to.be.equal('Falha de autenticação');
+    expect(res.data.errors[0].code).to.be.equal(401);
+    expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
   });
 
   it('should return bad request error, invalid id', async () => {
       
-    const user = new User();
-    user.name = authenticatedUser.name;
-    user.email = authenticatedUser.email;
-    user.password = await bcrypt.hash(authenticatedUser.password, 2);
-    user.birthDate = authenticatedUser.birthDate;
-
-    const newUser = await dataSource.getRepository(User).save(user);
+    const newUser = await dataSource.getRepository(User).save({
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      password: await bcrypt.hash(authenticatedUser.password, 2),
+      birthDate: authenticatedUser.birthDate,
+    });
 
     expect(newUser.name).to.be.equal(authenticatedUser.name);
     expect(newUser.email).to.be.equal(authenticatedUser.email);
     expect(newUser.birthDate).to.be.equal(authenticatedUser.birthDate);
-    expect(newUser.id).to.be.a('number');
 
-    const response = await axios({
+    const res = await axios({
       url: 'http://localhost:3000',
       method: 'post',
       headers: {
@@ -152,7 +146,7 @@ describe('Testing user query', () => {
       },
     });
 
-    expect(response.data.errors[0].code).to.be.equal(400);
-    expect(response.data.errors[0].message).to.be.equal('Usuário não existe');
+    expect(res.data.errors[0].code).to.be.equal(400);
+    expect(res.data.errors[0].message).to.be.equal('ID inválido');
   });
 });
