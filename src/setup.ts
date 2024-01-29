@@ -18,6 +18,7 @@ export const launchServer = async () => {
     typeDefs,
     resolvers,
     formatError,
+    context: async ({ req }) => ({ token: req.headers.authorization || '' }),
   });
 
   const port = 3000;

@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { UserInput } from '../resolvers';
 import { dataSource } from '../data-source';
 import { User } from '../user';
+import jwt from 'jsonwebtoken';
 
 const usersToTest = [
   { name: 'Taq', email: 'taq@gmail.com', password: 'senhaforte123', birthDate: '01-01-2024' },
@@ -13,13 +14,19 @@ const usersToTest = [
 
 describe('Testing createUser mutation', () => {
   
+  let token: string;
+
+  beforeEach(async () => {
+    token = jwt.sign('auth_token', process.env.JWT_SECRET as string);
+  });
+  
   afterEach(async () => {
     await dataSource.getRepository(User).delete({});
   });
 
   it('should create user successfully', async () => {
     const user = usersToTest[0];
-    const createdUser = await createUser(user);
+    const createdUser = await createUser(user, token);
 
     expect(user.name).to.be.equal(createdUser.data.createUser.name);
     expect(user.email).to.be.equal(createdUser.data.createUser.email);
@@ -34,9 +41,18 @@ describe('Testing createUser mutation', () => {
     expect(user.birthDate).to.be.equal(newUser?.birthDate);
   });
 
+  it('should return auth error', async () => {
+    const invalid_token = token + 'invalid';
+    for (const user of usersToTest) {
+      const createdUser = await createUser(user, invalid_token);
+      expect(createdUser.errors[0].code).to.be.equal(401);
+      expect(createdUser.errors[0].message).to.be.equal('Erro de autenticação');
+    }
+  });
+
   it('should return weak password error', async () => {
     for (const user of usersToTest.slice(1, 4)) {
-      const createdUser = await createUser(user);
+      const createdUser = await createUser(user, token);
       expect(createdUser.errors[0].code).to.be.equal(400);
       expect(createdUser.errors[0].message).to.be.equal('Senha fraca');
     }
@@ -48,7 +64,7 @@ describe('Testing createUser mutation', () => {
     const dbUser = { ...user };
     dataSource.getRepository(User).save(dbUser);
 
-    const createdUser = await createUser(user);
+    const createdUser = await createUser(user, token);
 
     expect(user.email).to.be.equal(dbUser.email);
     expect(createdUser.errors[0].code).to.be.equal(409);
@@ -57,10 +73,13 @@ describe('Testing createUser mutation', () => {
   
 });
 
-const createUser = async (user: UserInput) => {
+const createUser = async (user: UserInput, token: string) => {
   const createUserResponse = await axios({
     url: 'http://localhost:3000',
     method: 'post',
+    headers: {
+      Authorization: token
+    },
     data: {
       query: `
             mutation Mutation($data: UserInput) {
