@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import { dataSource } from '../data-source';
 import { User } from '../user';
 import { UserInput } from '../resolvers';
