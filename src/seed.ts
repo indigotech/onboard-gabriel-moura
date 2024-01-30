@@ -7,13 +7,15 @@ import bcrypt from 'bcrypt';
 
 dotenv.config({});
 
-export const createFakeUser = async (i: number) => {
+export const createFakeUser = async (user: Partial<User>, i?: number) => {
+  
+  const n = i ? i : 0;
 
   return {
-    name: faker.person.fullName(),
-    email: 'newuser' + i + '@taq.com',
-    password: await bcrypt.hash('senhaforte123' + i, 2),
-    birthDate: faker.date.birthdate().toString()
+    name: user.name ?? faker.person.fullName(),
+    email: user.email ?? 'newuser' + n + '@taq.com',
+    password: await bcrypt.hash(user.password ?? 'senhaforte0' + n, 2),
+    birthDate: user.birthDate ?? faker.date.birthdate().toString()
   };
 
 };
@@ -24,7 +26,7 @@ export const populateDb = async () => {
   const users = [];
 
   for (let i = 0; i < 100; i++) {
-    const user = await createFakeUser(i);
+    const user = await createFakeUser({}, i);
     users.push(user);
   }
 
