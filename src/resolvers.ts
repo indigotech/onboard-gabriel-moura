@@ -40,7 +40,7 @@ export const resolvers = {
     },
 
     users: async (_parent: never, args: { maxUsers?: number }, context: { token: string }) => {
-      await authLogin(context);
+      await validateContext(context);
 
       const max = args.maxUsers ? args.maxUsers : 10;
 

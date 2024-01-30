@@ -40,22 +40,13 @@ describe('Testing users list query', () => {
             },
             data: {
                 query: `
-                    query Query($maxUsers: Int, $step: Int) {
-                        users(maxUsers: $maxUsers, step: $step) {
-                            users {
-                                id
-                                name
-                                email
-                                birthDate
-                            }
-                            totalUsers
-                            before
-                            after
+                    query Query($maxUsers: Int) {
+                        users(maxUsers: $maxUsers) {
+                            users
                         }
                     }
                     variables: {
                         maxUsers: 5,
-                        step: 0,
                     },
                 `
             },
