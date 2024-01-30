@@ -6,12 +6,7 @@ export const validateContext = async (context: { token: string }) => {
 
   try {
 
-    const payload = verify(token, process.env.JWT_SECRET as string) as {
-      email: string,
-      id: string,
-      iat: number,
-      exp: number, 
-    };
+    verify(token, process.env.JWT_SECRET as string);
 
   } catch (err: any) {
 
