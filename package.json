@@ -6,11 +6,10 @@
   "scripts": {
     "test": "mocha -r ts-node/register ./src/test/index.ts",
     "dev": "ts-node-dev --transpile-only --exit-child src/index.ts",
-    "pg": "ts-node-dev --transpile-only --exit-child src/add-row.ts",
     "start": "echo Hello World",
+    "seeds": "ts-node-dev --transpile-only --exit-child src/seed.ts",
     "typeorm": "typeorm-ts-node-commonjs",
-    "lint": "npx eslint .",
-    "lintf": "npx eslint . --fix"
+    "format": "npx eslint --fix . && npx prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -30,6 +29,7 @@
     "dotenv": "16.3.1",
     "express": "4.18.2",
     "express-graphql": "0.12.0",
+    "faker": "6.6.6",
     "graphql": "15.8.0",
     "jsonwebtoken": "9.0.2",
     "nexus": "1.3.0",
@@ -40,6 +40,7 @@
     "typeorm": "0.3.19"
   },
   "devDependencies": {
+    "@faker-js/faker": "8.4.0",
     "@types/bcrypt": "5.0.2",
     "@types/chai": "4.3.11",
     "@types/mocha": "10.0.6",
