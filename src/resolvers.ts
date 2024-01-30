@@ -87,7 +87,7 @@ export const resolvers = {
       const token = jwt.sign(
         { email: user.email, id: user.id },
         process.env.JWT_SECRET as string,
-        args.data.rememberMe ? { expiresIn: '7d' } : { expiresIn: '1h' },
+        args.data.rememberMe ? { expiresIn: '7 days' } : { expiresIn: '2h' }
       );
 
       return {
