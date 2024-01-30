@@ -4,156 +4,130 @@ import { dataSource } from '../data-source';
 import { User } from '../user';
 import { UserInput } from '../resolvers';
 import { expect, use } from 'chai';
-import chaiSorted from 'chai-sorted'; 
+import chaiSorted from 'chai-sorted';
 import { createFakeUser } from '../seed';
 
 const authenticatedUser: UserInput = {
-    name: 'Authenticated User',
-    email: 'taq@gmail.com',
-    password: 'senhafort3',
-    birthDate: '01-01-2024',
+  name: 'Authenticated User',
+  email: 'taq@gmail.com',
+  password: 'senhafort3',
+  birthDate: '01-01-2024',
 };
-  
+
 describe('Testing users list query', () => {
+  let token: string;
 
-    let token: string;
+  beforeEach(async () => {
+    token = sign({ email: authenticatedUser.email }, process.env.JWT_SECRET as string);
+  });
 
-    beforeEach(async () => {
-        token = sign(
-            { email: authenticatedUser.email },
-            process.env.JWT_SECRET as string
-        );
-    });
+  afterEach(async () => {
+    await dataSource.getRepository(User).delete({});
+  });
 
-    afterEach(async () => {
-        await dataSource.getRepository(User).delete({});
-    });
+  it('should return list of users succesfully, maximum default (10)', async () => {
+    const n_dbUsers = 20;
+    const users = [];
 
-    it('should return list of users succesfully, maximum default (10)', async () => {
+    for (let i = 0; i < n_dbUsers; i++) {
+      const user = await createFakeUser({}, i);
+      users.push(user);
+    }
+    await dataSource.getRepository(User).save(users);
 
-        const n_dbUsers = 20;
-        const users = [];
+    const res = await usersResponse(token);
 
-        for (let i = 0; i < n_dbUsers; i++) {
-            const user = await createFakeUser(i);
-            users.push(user);
-        }
+    expect(res.data.data.users.length).to.be.equal(10);
+    use(chaiSorted);
+    expect(res.data.data.users).to.be.sortedBy('name');
+  });
 
-        await dataSource.getRepository(User).save(users);
+  it('should return list of users succesfully, passing arg max users', async () => {
+    const n_dbUsers = 20;
+    const maxUsers = 5;
+    const users = [];
 
-        const res = await usersResponse(token);
-        
-        expect(res.data.data.users.length).to.be.equal(10);
+    for (let i = 0; i < n_dbUsers; i++) {
+      const user = await createFakeUser({}, i);
+      users.push(user);
+    }
+    await dataSource.getRepository(User).save(users);
 
-        use(chaiSorted);
-        expect(res.data.data.users).to.be.sortedBy('name');
+    const res = await usersResponse(token, maxUsers);
 
-    });
+    expect(res.data.data.users.length).to.be.equal(maxUsers);
+    use(chaiSorted);
+    expect(res.data.data.users).to.be.sortedBy('name');
+  });
 
-    it('should return list of users succesfully, passing arg max users', async () => {
+  it('should return list of all users on db succesfully', async () => {
+    const n_dbUsers = 10;
+    const maxUsers = 15;
+    const users = [];
 
-        const n_dbUsers = 20;
-        const maxUsers = 5;
-        const users = [];
-      
-        for (let i = 0; i < n_dbUsers; i++) {
-            const user = await createFakeUser(i);
-            users.push(user);
-        }
+    for (let i = 0; i < n_dbUsers; i++) {
+      const user = await createFakeUser({}, i);
+      users.push(user);
+    }
+    await dataSource.getRepository(User).save(users);
 
-        await dataSource.getRepository(User).save(users);
+    const res = await usersResponse(token, maxUsers);
 
-        const res = await usersResponse(token, maxUsers);
-        
-        expect(res.data.data.users.length).to.be.equal(maxUsers);
+    expect(res.data.data.users.length).to.be.equal(users.length);
+    use(chaiSorted);
+    expect(res.data.data.users).to.be.sortedBy('name');
+  });
 
-        use(chaiSorted);
-        expect(res.data.data.users).to.be.sortedBy('name');
+  it('should return empty list: max users 0', async () => {
+    const n_dbUsers = 10;
+    const maxUsers = 0;
+    const users = [];
 
-    });
+    for (let i = 0; i < n_dbUsers; i++) {
+      const user = await createFakeUser({}, i);
+      users.push(user);
+    }
+    await dataSource.getRepository(User).save(users);
 
-    it('should return list of all users on db succesfully', async () => {
+    const res = await usersResponse(token, maxUsers);
 
-        const n_dbUsers = 10;
-        const maxUsers = 15;
-        const users = [];
-      
-        for (let i = 0; i < n_dbUsers; i++) {
-            const user = await createFakeUser(i);
-            users.push(user);
-        }
+    expect(res.data.data.users).to.be.empty;
+  });
 
-        await dataSource.getRepository(User).save(users);
+  it('should return empty list: no users on db', async () => {
+    const maxUsers = 10;
+    const res = await usersResponse(token, maxUsers);
 
-        const res = await usersResponse(token, maxUsers);
-        
-        expect(res.data.data.users.length).to.be.equal(users.length);
+    expect(res.data.data.users).to.be.empty;
+  });
 
-        use(chaiSorted);
-        expect(res.data.data.users).to.be.sortedBy('name');
+  it('should return auth error: invalid token', async () => {
+    const n_dbUsers = 20;
+    const users = [];
 
-    });
+    for (let i = 0; i < n_dbUsers; i++) {
+      const user = await createFakeUser({}, i);
+      users.push(user);
+    }
+    await dataSource.getRepository(User).save(users);
 
-    it('should return empty list: max users 0', async () => {
+    const res = await usersResponse(token + 'invalid_token');
 
-        const n_dbUsers = 10;
-        const maxUsers = 0;
-        const users = [];
-      
-        for (let i = 0; i < n_dbUsers; i++) {
-            const user = await createFakeUser(i);
-            users.push(user);
-        }
-
-        await dataSource.getRepository(User).save(users);
-
-        const res = await usersResponse(token, maxUsers);
-        
-        expect(res.data.data.users).to.be.empty;
-
-    });
-
-    it('should return empty list: no users on db', async () => {
-
-        const maxUsers = 10;
-
-        const res = await usersResponse(token, maxUsers);
-        
-        expect(res.data.data.users).to.be.empty;
-
-    });
-
-    it('should return auth error: invalid token', async () => {
-
-        const n_dbUsers = 20;
-        const users = [];
-
-        for (let i = 0; i < n_dbUsers; i++) {
-            const user = await createFakeUser(i);
-            users.push(user);
-        }
-
-        await dataSource.getRepository(User).save(users);
-
-        const res = await usersResponse(token + 'invalid_token');
-        
-        expect(res.data.errors[0].code).to.be.equal(401);
-        expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
-        expect(res.data.errors[0].additionalInfo).to.be.equal('Token inválido');
-
-    });
+    expect(res.data.errors[0].code).to.be.equal(401);
+    expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
+    expect(res.data.errors[0].additionalInfo).to.be.equal('Token inválido');
+  });
 });
 
-const usersResponse = (async (token: string, maxUsers?: number) => {
-    
-    const res = await axios({
-        url: 'http://localhost:3000',
-        method: 'post',
-        headers: {
-            Authorization: token,
-        },
-        data: {
-            query: `
+const usersResponse = async (token: string, maxUsers?: number) => {
+  const res = await axios({
+    url: 'http://localhost:3000',
+    method: 'post',
+    headers: {
+      Authorization: token,
+    },
+    data: {
+      query: `
                 query Users($maxUsers: Int) {
                     users(maxUsers: $maxUsers) {
                         id
@@ -163,11 +137,11 @@ const usersResponse = (async (token: string, maxUsers?: number) => {
                     }
                 }
             `,
-            variables: {
-                maxUsers: maxUsers,
-            }
-        },
-    });
+      variables: {
+        maxUsers: maxUsers,
+      },
+    },
+  });
 
-    return res;
-});
+  return res;
+};

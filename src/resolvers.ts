@@ -43,16 +43,14 @@ export const resolvers = {
       await validateContext(context);
 
       const max = args.maxUsers ? args.maxUsers : 10;
-
       if (args.maxUsers == 0) {
         return [];
       }
 
       const users = await dataSource.getRepository(User).find({
-          take: max,
-        }
-      );
-      
+        take: max,
+      });
+
       users.sort((a: User, b: User) => {
         if (a.name.toUpperCase() < b.name.toUpperCase()) {
           return -1;
@@ -114,7 +112,7 @@ export const resolvers = {
       const token = jwt.sign(
         { email: user.email, id: user.id },
         process.env.JWT_SECRET as string,
-        args.data.rememberMe ? { expiresIn: '7 days' } : { expiresIn: '2h' }
+        args.data.rememberMe ? { expiresIn: '7 days' } : { expiresIn: '2h' },
       );
 
       return {
