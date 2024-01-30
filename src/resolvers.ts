@@ -44,6 +44,10 @@ export const resolvers = {
 
       const max = args.maxUsers ? args.maxUsers : 10;
 
+      if (args.maxUsers == 0) {
+        return [];
+      }
+
       const users = await dataSource.getRepository(User).find({
           take: max,
         }

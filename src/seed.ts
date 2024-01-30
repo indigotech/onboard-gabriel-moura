@@ -33,5 +33,3 @@ export const populateDb = async () => {
   await dataSource.getRepository(User).save(users);
   
 };
-
-populateDb();
