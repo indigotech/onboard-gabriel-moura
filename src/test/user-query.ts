@@ -20,7 +20,7 @@ describe('Testing user query', () => {
   beforeEach(async () => {
     token = sign(
       { email: authenticatedUser.email },
-      process.env.JWT_SECRET as string,
+      process.env.JWT_SECRET as string
     );
   });
 
@@ -100,6 +100,8 @@ describe('Testing user query', () => {
 
     expect(res.data.errors[0].code).to.be.equal(401);
     expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
+    expect(res.data.errors[0].additionalInfo).to.be.equal('Token inválido');
+
   });
 
   it('should return auth error: invalid token', async () => {
@@ -136,6 +138,55 @@ describe('Testing user query', () => {
 
     expect(res.data.errors[0].code).to.be.equal(401);
     expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
+    expect(res.data.errors[0].additionalInfo).to.be.equal('Token inválido');
+
+  });
+
+  it('should return auth error: expired token', async () => {
+      
+    const newUser = await dataSource.getRepository(User).save({
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      password: await bcrypt.hash(authenticatedUser.password, 2),
+      birthDate: authenticatedUser.birthDate,
+    });
+
+    const exp_token = sign(
+      {
+        email: authenticatedUser.email,
+        iat: Math.floor(Date.now() / 1000) - 60*60*2
+      },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1h' }
+    );
+
+    const res = await axios({
+      url: 'http://localhost:3000',
+      method: 'post',
+      headers: {
+        Authorization: exp_token,
+      },
+      data: {
+          query: `
+              query User ($id: ID) {
+                user(id: $id) {
+                    id
+                    name
+                    email
+                    birthDate
+                }
+              }
+          `,
+          variables: {
+            id: newUser.id,
+          },
+      },
+    });
+
+    expect(res.data.errors[0].code).to.be.equal(401);
+    expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
+    expect(res.data.errors[0].additionalInfo).to.be.equal('Token expirado');
+
   });
 
   it('should return not found error, invalid id', async () => {

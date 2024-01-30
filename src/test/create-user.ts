@@ -40,12 +40,13 @@ describe('Testing createUser mutation', () => {
     expect(user.birthDate).to.be.equal(newUser?.birthDate);
   });
 
-  it('should return auth error', async () => {
+  it('should return auth error: invalid token', async () => {
     const invalid_token = token + 'invalid';
     for (const user of usersToTest) {
       const createdUser = await createUser(user, invalid_token);
       expect(createdUser.errors[0].code).to.be.equal(401);
       expect(createdUser.errors[0].message).to.be.equal('Erro de autenticação');
+      expect(createdUser.errors[0].additionalInfo).to.be.equal('Token inválido');
     }
   });
 
