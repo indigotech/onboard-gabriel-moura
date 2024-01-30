@@ -20,10 +20,9 @@ export const formatError = (error: GraphQLError) => {
       additionalInfo: formattedError?.additionalInfo,
     };
   }
-  
+
   return {
     code: 500,
     message: 'Erro interno',
   };
-
 };

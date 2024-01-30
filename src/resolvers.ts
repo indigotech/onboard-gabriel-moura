@@ -4,6 +4,7 @@ import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { validateContext } from './authentication';
 
 export interface UserInput {
   name: string;
@@ -23,17 +24,26 @@ export const resolvers = {
     hello: () => {
       return 'Hello World!';
     },
+
+    user: async (_parent: never, args: { id: number }, context: { token: string }) => {
+      await validateContext(context);
+
+      const user = await dataSource.getRepository(User).findOneBy({
+        id: args.id,
+      });
+
+      if (!user) {
+        throw new CustomError(404, 'Usuário não encontrado');
+      }
+
+      return user;
+    },
   },
+
   Mutation: {
     createUser: async (_parent: never, args: { data: UserInput }, context: { token: string }) => {
-      const { token } = context;
-      
-      try {
-        jwt.verify(token, process.env.JWT_SECRET as string);
-      } catch(err) {
-        throw new CustomError(401, 'Erro de autenticação');
-      }
-      
+      await validateContext(context);
+
       if (!validateStrongPassword(args.data.password)) {
         throw new CustomError(400, 'Senha fraca', 'Deve ter 6 caracteres, com no mínimo 1 letra e 1 dígito');
       }
@@ -56,12 +66,7 @@ export const resolvers = {
 
       const newUser = await dataSource.getRepository(User).save(user);
 
-      return {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        birthDate: newUser.birthDate,
-      };
+      return newUser;
     },
 
     login: async (_parent: never, args: { data: LoginInput }) => {
@@ -72,17 +77,17 @@ export const resolvers = {
       });
 
       if (!user) {
-        throw new CustomError(401, 'Falha de autenticação', 'Email não existe');
+        throw new CustomError(401, 'Erro de autenticação', 'Email não existe');
       }
 
       if (!(await bcrypt.compare(args.data.password, user.password))) {
-        throw new CustomError(401, 'Falha de autenticação', 'Senha incorreta');
+        throw new CustomError(401, 'Erro de autenticação', 'Senha incorreta');
       }
 
       const token = jwt.sign(
         { email: user.email, id: user.id },
         process.env.JWT_SECRET as string,
-        args.data.rememberMe ? { expiresIn: '7d' } : { expiresIn: '1h' },
+        args.data.rememberMe ? { expiresIn: '7 days' } : { expiresIn: '2h' }
       );
 
       return {

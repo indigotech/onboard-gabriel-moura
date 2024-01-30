@@ -13,13 +13,12 @@ const usersToTest = [
 ];
 
 describe('Testing createUser mutation', () => {
-  
   let token: string;
 
   beforeEach(async () => {
     token = jwt.sign('auth_token', process.env.JWT_SECRET as string);
   });
-  
+
   afterEach(async () => {
     await dataSource.getRepository(User).delete({});
   });
@@ -41,12 +40,13 @@ describe('Testing createUser mutation', () => {
     expect(user.birthDate).to.be.equal(newUser?.birthDate);
   });
 
-  it('should return auth error', async () => {
+  it('should return auth error: invalid token', async () => {
     const invalid_token = token + 'invalid';
     for (const user of usersToTest) {
       const createdUser = await createUser(user, invalid_token);
       expect(createdUser.errors[0].code).to.be.equal(401);
       expect(createdUser.errors[0].message).to.be.equal('Erro de autenticação');
+      expect(createdUser.errors[0].additionalInfo).to.be.equal('Token inválido');
     }
   });
 
@@ -70,7 +70,6 @@ describe('Testing createUser mutation', () => {
     expect(createdUser.errors[0].code).to.be.equal(409);
     expect(createdUser.errors[0].message).to.be.equal('Email duplicado');
   });
-  
 });
 
 const createUser = async (user: UserInput, token: string) => {
@@ -78,7 +77,7 @@ const createUser = async (user: UserInput, token: string) => {
     url: 'http://localhost:3000',
     method: 'post',
     headers: {
-      Authorization: token
+      Authorization: token,
     },
     data: {
       query: `
