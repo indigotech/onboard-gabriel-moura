@@ -53,6 +53,9 @@ export const resolvers = {
       const users = await dataSource.getRepository(User).find({
           skip: step,
           take: max,
+          order: {
+            name: 'ASC'
+          }
         }
       );
 
