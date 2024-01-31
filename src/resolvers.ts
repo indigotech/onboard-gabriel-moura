@@ -49,16 +49,9 @@ export const resolvers = {
 
       const users = await dataSource.getRepository(User).find({
         take: max,
-      });
-
-      users.sort((a: User, b: User) => {
-        if (a.name.toUpperCase() < b.name.toUpperCase()) {
-          return -1;
+        order: {
+          name: 'ASC',
         }
-        if (a.name.toUpperCase() > b.name.toUpperCase()) {
-          return 1;
-        }
-        return 0;
       });
 
       return users;
