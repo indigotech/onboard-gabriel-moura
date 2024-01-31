@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import { dataSource } from '../data-source';
 import { User } from '../user';
 import { UserInput } from '../resolvers';
@@ -14,14 +14,10 @@ const authenticatedUser: UserInput = {
 };
 
 describe('Testing user query', () => {
-
   let token: string;
 
   beforeEach(async () => {
-    token = sign(
-      { email: authenticatedUser.email },
-      process.env.JWT_SECRET as string
-    );
+    token = sign({ email: authenticatedUser.email }, process.env.JWT_SECRET as string);
   });
 
   afterEach(async () => {
@@ -29,7 +25,6 @@ describe('Testing user query', () => {
   });
 
   it('should return user info succesfully', async () => {
-      
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
       email: authenticatedUser.email,
@@ -41,10 +36,10 @@ describe('Testing user query', () => {
       url: 'http://localhost:3000',
       method: 'post',
       headers: {
-          Authorization: token,
+        Authorization: token,
       },
       data: {
-          query: `
+        query: `
               query User ($id: ID) {
                   user(id: $id) {
                       id
@@ -54,9 +49,9 @@ describe('Testing user query', () => {
                   }
               }
           `,
-          variables: {
-            id: newUser.id,
-          },
+        variables: {
+          id: newUser.id,
+        },
       },
     });
 
@@ -64,11 +59,9 @@ describe('Testing user query', () => {
     expect(newUser.name).to.be.equal(res.data.data.user.name);
     expect(newUser.email).to.be.equal(res.data.data.user.email);
     expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
-
   });
 
   it('should return auth error: missing token', async () => {
-      
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
       email: authenticatedUser.email,
@@ -79,10 +72,9 @@ describe('Testing user query', () => {
     const res = await axios({
       url: 'http://localhost:3000',
       method: 'post',
-      headers: {
-      },
+      headers: {},
       data: {
-          query: `
+        query: `
               query User ($id: ID) {
                   user(id: $id) {
                       id
@@ -92,20 +84,18 @@ describe('Testing user query', () => {
                   }
               }
           `,
-          variables: {
-            id: newUser.id,
-          },
+        variables: {
+          id: newUser.id,
+        },
       },
     });
 
     expect(res.data.errors[0].code).to.be.equal(401);
     expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
     expect(res.data.errors[0].additionalInfo).to.be.equal('Token inválido');
-
   });
 
   it('should return auth error: invalid token', async () => {
-      
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
       email: authenticatedUser.email,
@@ -120,7 +110,7 @@ describe('Testing user query', () => {
         Authorization: token + 'invalid_token',
       },
       data: {
-          query: `
+        query: `
               query User ($id: ID) {
                   user(id: $id) {
                       id
@@ -130,20 +120,18 @@ describe('Testing user query', () => {
                   }
               }
           `,
-          variables: {
-            id: newUser.id,
-          },
+        variables: {
+          id: newUser.id,
+        },
       },
     });
 
     expect(res.data.errors[0].code).to.be.equal(401);
     expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
     expect(res.data.errors[0].additionalInfo).to.be.equal('Token inválido');
-
   });
 
   it('should return auth error: expired token', async () => {
-      
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
       email: authenticatedUser.email,
@@ -154,10 +142,10 @@ describe('Testing user query', () => {
     const exp_token = sign(
       {
         email: authenticatedUser.email,
-        iat: Math.floor(Date.now() / 1000) - 60*60*2
+        iat: Math.floor(Date.now() / 1000) - 60 * 60 * 2,
       },
       process.env.JWT_SECRET as string,
-      { expiresIn: '1h' }
+      { expiresIn: '1h' },
     );
 
     const res = await axios({
@@ -167,7 +155,7 @@ describe('Testing user query', () => {
         Authorization: exp_token,
       },
       data: {
-          query: `
+        query: `
               query User ($id: ID) {
                 user(id: $id) {
                     id
@@ -177,20 +165,18 @@ describe('Testing user query', () => {
                 }
               }
           `,
-          variables: {
-            id: newUser.id,
-          },
+        variables: {
+          id: newUser.id,
+        },
       },
     });
 
     expect(res.data.errors[0].code).to.be.equal(401);
     expect(res.data.errors[0].message).to.be.equal('Erro de autenticação');
     expect(res.data.errors[0].additionalInfo).to.be.equal('Token expirado');
-
   });
 
   it('should return not found error, invalid id', async () => {
-      
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
       email: authenticatedUser.email,
