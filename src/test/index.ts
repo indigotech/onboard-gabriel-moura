@@ -16,5 +16,5 @@ before(async () => {
 require('./hello');
 require('./create-user');
 require('./login');
-require('./user-query');
-require('./users');
+require('./user');
+require('./pagination');
