@@ -3,9 +3,8 @@ import { sign } from 'jsonwebtoken';
 import { dataSource } from '../data-source';
 import { User } from '../user';
 import { UserInput } from '../resolvers';
-import { expect, use } from 'chai';
-import chaiSorted from 'chai-sorted';
 import { createFakeUser } from '../seed';
+import { expect } from 'chai';
 
 const authenticatedUser: UserInput = {
   name: 'Authenticated User',
@@ -26,10 +25,10 @@ describe('Testing users list query', () => {
   });
 
   it('should return list of users succesfully, maximum default (10)', async () => {
-    const n_dbUsers = 20;
+    const nDbUsers = 20;
     const users = [];
 
-    for (let i = 0; i < n_dbUsers; i++) {
+    for (let i = 0; i < nDbUsers; i++) {
       const user = await createFakeUser({}, i);
       users.push(user);
     }
@@ -38,16 +37,15 @@ describe('Testing users list query', () => {
     const res = await usersResponse(token);
 
     expect(res.data.data.users.length).to.be.equal(10);
-    use(chaiSorted);
     expect(res.data.data.users).to.be.sortedBy('name');
   });
 
   it('should return list of users succesfully, passing arg max users', async () => {
-    const n_dbUsers = 20;
+    const nDbUsers = 20;
     const maxUsers = 5;
     const users = [];
 
-    for (let i = 0; i < n_dbUsers; i++) {
+    for (let i = 0; i < nDbUsers; i++) {
       const user = await createFakeUser({}, i);
       users.push(user);
     }
@@ -56,16 +54,15 @@ describe('Testing users list query', () => {
     const res = await usersResponse(token, maxUsers);
 
     expect(res.data.data.users.length).to.be.equal(maxUsers);
-    use(chaiSorted);
     expect(res.data.data.users).to.be.sortedBy('name');
   });
 
-  it('should return list of all users on db succesfully', async () => {
-    const n_dbUsers = 10;
+  it('should return list of all users succesfully, maxUsers greater than dbUsers', async () => {
+    const nDbUsers = 10;
     const maxUsers = 15;
     const users = [];
 
-    for (let i = 0; i < n_dbUsers; i++) {
+    for (let i = 0; i < nDbUsers; i++) {
       const user = await createFakeUser({}, i);
       users.push(user);
     }
@@ -74,16 +71,15 @@ describe('Testing users list query', () => {
     const res = await usersResponse(token, maxUsers);
 
     expect(res.data.data.users.length).to.be.equal(users.length);
-    use(chaiSorted);
     expect(res.data.data.users).to.be.sortedBy('name');
   });
 
   it('should return empty list: max users 0', async () => {
-    const n_dbUsers = 10;
+    const nDbUsers = 10;
     const maxUsers = 0;
     const users = [];
 
-    for (let i = 0; i < n_dbUsers; i++) {
+    for (let i = 0; i < nDbUsers; i++) {
       const user = await createFakeUser({}, i);
       users.push(user);
     }
@@ -102,10 +98,10 @@ describe('Testing users list query', () => {
   });
 
   it('should return auth error: invalid token', async () => {
-    const n_dbUsers = 20;
+    const nDbUsers = 20;
     const users = [];
 
-    for (let i = 0; i < n_dbUsers; i++) {
+    for (let i = 0; i < nDbUsers; i++) {
       const user = await createFakeUser({}, i);
       users.push(user);
     }
