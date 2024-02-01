@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config({});
 
 export const populateDb = async () => {
-  initializeDbConnection(dataSource);
+  await initializeDbConnection(dataSource);
   const users = [];
 
   for (let i = 0; i < 100; i++) {
