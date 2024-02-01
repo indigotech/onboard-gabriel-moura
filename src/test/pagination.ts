@@ -43,7 +43,7 @@ describe('Testing users list query with pagination', () => {
     const variables = {};
     const usersResponse = await usersResponseData(token, variables);
 
-    // expect(usersResponse.data.users.users).to.be.sortedBy('name');
+    expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.previous).to.be.equal(false);
     expect(usersResponse.data.users.next).to.be.equal(true);
   });
@@ -52,7 +52,7 @@ describe('Testing users list query with pagination', () => {
     const variables = { maxUsers: 20 };
     const usersResponse = await usersResponseData(token, variables);
 
-    // expect(usersResponse.data.users.users).to.be.sortedBy('name');
+    expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.totalUsers).to.be.equal(50);
     expect(usersResponse.data.users.previous).to.be.equal(false);
     expect(usersResponse.data.users.next).to.be.equal(true);
@@ -62,7 +62,7 @@ describe('Testing users list query with pagination', () => {
     const variables = { maxUsers: 60 };
     const usersResponse = await usersResponseData(token, variables);
 
-    // expect(usersResponse.data.users.users).to.be.sortedBy('name');
+    expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.totalUsers).to.be.equal(50);
     expect(usersResponse.data.users.totalUsers).to.be.equal(usersResponse.data.users.users.length);
     expect(usersResponse.data.users.previous).to.be.equal(false);
@@ -73,7 +73,7 @@ describe('Testing users list query with pagination', () => {
     const variables = { step: 20 };
     const usersResponse = await usersResponseData(token, variables);
 
-    // expect(usersResponse.data.users.users).to.be.sortedBy('name');
+    expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.totalUsers).to.be.equal(50);
     expect(usersResponse.data.users.users.length).to.be.equal(10);
     expect(usersResponse.data.users.previous).to.be.equal(true);
@@ -84,6 +84,7 @@ describe('Testing users list query with pagination', () => {
     const variables = { step: 40 };
     const usersResponse = await usersResponseData(token, variables);
 
+    expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.totalUsers).to.be.equal(50);
     expect(usersResponse.data.users.users.length).to.be.equal(10);
     expect(usersResponse.data.users.previous).to.be.equal(true);
@@ -94,6 +95,7 @@ describe('Testing users list query with pagination', () => {
     const variables = { maxUsers: 60, step: 40 };
     const usersResponse = await usersResponseData(token, variables);
 
+    expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.totalUsers).to.be.equal(50);
     expect(usersResponse.data.users.users.length).to.be.equal(10);
     expect(usersResponse.data.users.previous).to.be.equal(true);
