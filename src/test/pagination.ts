@@ -13,16 +13,6 @@ const authenticatedUser: UserInput = {
   birthDate: '01-01-2024',
 };
 
-const populateDb = async () => {
-  const user0 = await createFakeUser({ name: 'B Usuario', email: 'user1@taq.com' });
-  const user1 = await createFakeUser({ name: 'De Code', email: 'user2@taq.com' });
-  const user2 = await createFakeUser({ name: 'Ze Dev', email: 'user2@taq.com' });
-  const user3 = await createFakeUser({ name: 'Da Taq', email: 'user3@taq.com' });
-  const user4 = await createFakeUser({ name: 'A Sobrenome', email: 'user4@taq.com' });
-
-  return [user0, user1, user2, user3, user4,];
-};
-
 describe('Testing users list query with pagination', () => {
   let token: string;
   let users: UserInput[];
@@ -34,8 +24,8 @@ describe('Testing users list query with pagination', () => {
       await createFakeUser({ name: 'De Code', email: 'user1@taq.com' }),
       await createFakeUser({ name: 'Ze Dev', email: 'user2@taq.com' }),
       await createFakeUser({ name: 'Da Taq', email: 'user3@taq.com' }),
-      await createFakeUser({ name: 'A Sobrenome', email: 'user4@taq.com' })
-    ]
+      await createFakeUser({ name: 'A Sobrenome', email: 'user4@taq.com' }),
+    ];
   });
 
   beforeEach(async () => {
@@ -67,14 +57,14 @@ describe('Testing users list query with pagination', () => {
 
   it('should return bad request error: step bigger than db', async () => {
     const variables = { maxUsers: 3, step: 10 };
-    const usersResponse = await usersResponseData(token, variables);  
+    const usersResponse = await usersResponseData(token, variables);
 
     expect(usersResponse.errors[0].code).to.be.equal(400);
     expect(usersResponse.errors[0].message).to.be.equal('Requisição inválida');
     expect(usersResponse.errors[0].additionalInfo).to.be.equal('Erro ao acessar usuário');
   });
 
-  it('should return list of 3 first users successfully: no previous, with next', async () => {
+  it('should return list of 3 (default) first users successfully: no previous, with next', async () => {
     const variables = {};
     const usersResponse = await usersResponseData(token, variables);
 
@@ -158,7 +148,7 @@ describe('Testing users list query with pagination', () => {
 
     expect(usersResponse.data.users.users).to.be.sortedBy('name');
     expect(usersResponse.data.users.users.length).to.be.equal(3);
-    expect(usersResponse.data.users.totalUsers).to.be.equal(dbSize);  
+    expect(usersResponse.data.users.totalUsers).to.be.equal(dbSize);
     expect(usersResponse.data.users.previous).to.be.equal(true);
     expect(usersResponse.data.users.next).to.be.equal(false);
 
@@ -187,7 +177,7 @@ describe('Testing users list query with pagination', () => {
   });
 });
 
-const usersResponseData = async (token: string, variables: { maxUsers?: number, step?: number}) => {
+const usersResponseData = async (token: string, variables: { maxUsers?: number; step?: number }) => {
   const res = await axios({
     url: 'http://localhost:3000',
     method: 'post',

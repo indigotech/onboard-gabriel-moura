@@ -39,7 +39,7 @@ export const resolvers = {
       return user;
     },
 
-    users: async (_parent: never, args: { maxUsers?: number, step?: number }, context: { token: string }) => {
+    users: async (_parent: never, args: { maxUsers?: number; step?: number }, context: { token: string }) => {
       await validateContext(context);
 
       const maxUsers = args.maxUsers !== undefined ? args.maxUsers : 3;
@@ -53,18 +53,17 @@ export const resolvers = {
 
       if (step >= totalUsers) {
         throw new CustomError(400, 'Requisição inválida', 'Erro ao acessar usuário');
-      };
+      }
 
       const users = await dataSource.getRepository(User).find({
-          skip: step,
-          take: pageSize,
-          order: {
-            name: 'ASC'
-          }
-        }
-      );
+        skip: step,
+        take: pageSize,
+        order: {
+          name: 'ASC',
+        },
+      });
 
-      const after = (step + pageSize < totalUsers);
+      const after = step + pageSize < totalUsers;
 
       return {
         users: users,
