@@ -13,8 +13,8 @@ before(async () => {
   await launchServer();
 });
 
-// require('./hello');
-// require('./create-user');
-// require('./login');
-// require('./user');
+require('./hello');
+require('./create-user');
+require('./login');
+require('./user');
 require('./pagination');
