@@ -19,8 +19,8 @@ type Session {
 type UserPage {
   users: [User]
   totalUsers: Int
-  before: Boolean
-  after: Boolean
+  previous: Boolean
+  next: Boolean
 }
 
 input LoginInput {

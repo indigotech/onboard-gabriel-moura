@@ -42,7 +42,7 @@ export const resolvers = {
     users: async (_parent: never, args: { maxUsers?: number, step?: number }, context: { token: string }) => {
       await validateContext(context);
 
-      const max = args.maxUsers ? args.maxUsers : 10;
+      const pageSize = args.maxUsers ? args.maxUsers : 10;
       const step = args.step ? args.step : 0;
       const totalUsers = await dataSource.getRepository(User).count();
 
@@ -52,27 +52,20 @@ export const resolvers = {
 
       const users = await dataSource.getRepository(User).find({
           skip: step,
-          take: max,
+          take: pageSize,
           order: {
             name: 'ASC'
           }
         }
       );
 
-      const nextUser = await dataSource.getRepository(User).findOne({
-          where: {
-            id: users[users.length - 1].id + 1,
-          },
-        }
-      );
+      const after = (step + pageSize < totalUsers);
 
-      const after = nextUser ? true : false;
-      
       return {
         users: users,
         totalUsers: totalUsers,
-        before: step,
-        after: after,
+        previous: step,
+        next: after,
       };
     },
   },

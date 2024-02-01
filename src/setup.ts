@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { ApolloServer } from 'apollo-server';
 import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
-import { formatError } from './custom-error';
+import { formatError } from './custom-error'
 
 export const initializeDbConnection = async (dataSource: DataSource) => {
   await dataSource
