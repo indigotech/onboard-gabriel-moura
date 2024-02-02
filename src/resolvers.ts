@@ -42,7 +42,8 @@ export const resolvers = {
     users: async (_parent: never, args: { maxUsers?: number; step?: number }, context: { token: string }) => {
       await validateContext(context);
 
-      const maxUsers = args.maxUsers !== undefined ? args.maxUsers : 3;
+      const defaultPageSize = 3;
+      const maxUsers = args.maxUsers ?? defaultPageSize;
       if (maxUsers <= 0) {
         throw new CustomError(400, 'Requisição inválida', 'Tamanho da página deve ser maior que zero');
       }
@@ -51,7 +52,7 @@ export const resolvers = {
       const step = args.step ? args.step : 0;
       const totalUsers = await dataSource.getRepository(User).count();
 
-      if (step >= totalUsers) {
+      if (step >= totalUsers || step < 0) {
         throw new CustomError(400, 'Requisição inválida', 'Erro ao acessar usuário');
       }
 
@@ -63,13 +64,14 @@ export const resolvers = {
         },
       });
 
-      const after = step + pageSize < totalUsers;
+      const isTherePreviousUser = step > 0;
+      const isThereNextUser = step + pageSize < totalUsers;
 
       return {
         users: users,
         totalUsers: totalUsers,
-        previous: step,
-        next: after,
+        previous: isTherePreviousUser,
+        next: isThereNextUser,
       };
     },
   },

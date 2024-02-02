@@ -3,7 +3,7 @@ export const typeDefs = `#graphql
 type Query {
   hello: String
   user(id: ID): User
-  users(maxUsers: Int, step: Int): UserPage
+  users(maxUsers: Int, step: Int): Users
 }
 
 type Mutation {
@@ -16,7 +16,7 @@ type Session {
   token: String!
 }
 
-type UserPage {
+type Users {
   users: [User]
   totalUsers: Int
   previous: Boolean
