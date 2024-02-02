@@ -3,7 +3,7 @@ import { sign } from 'jsonwebtoken';
 import { dataSource } from '../data-source';
 import { User } from '../user';
 import { UserInput } from '../resolvers';
-import { createFakeUser } from '../fake-user-generator';
+import { createFakeUser } from '../fake-data-generator';
 import { expect } from 'chai';
 
 const authenticatedUser: UserInput = {
