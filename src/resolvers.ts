@@ -39,22 +39,40 @@ export const resolvers = {
       return user;
     },
 
-    users: async (_parent: never, args: { maxUsers?: number }, context: { token: string }) => {
+    users: async (_parent: never, args: { maxUsers?: number; step?: number }, context: { token: string }) => {
       await validateContext(context);
 
-      const max = args.maxUsers ? args.maxUsers : 10;
-      if (args.maxUsers == 0) {
-        return [];
+      const defaultPageSize = 3;
+      const maxUsers = args.maxUsers ?? defaultPageSize;
+      if (maxUsers <= 0) {
+        throw new CustomError(400, 'Requisição inválida', 'Tamanho da página deve ser maior que zero');
+      }
+
+      const pageSize = maxUsers;
+      const step = args.step ? args.step : 0;
+      const totalUsers = await dataSource.getRepository(User).count();
+
+      if (step >= totalUsers || step < 0) {
+        throw new CustomError(400, 'Requisição inválida', 'Erro ao acessar usuário');
       }
 
       const users = await dataSource.getRepository(User).find({
-        take: max,
+        skip: step,
+        take: pageSize,
         order: {
           name: 'ASC',
-        }
+        },
       });
 
-      return users;
+      const isTherePreviousUser = step > 0;
+      const isThereNextUser = step + pageSize < totalUsers;
+
+      return {
+        users: users,
+        totalUsers: totalUsers,
+        previous: isTherePreviousUser,
+        next: isThereNextUser,
+      };
     },
   },
 
