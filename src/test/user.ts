@@ -5,6 +5,8 @@ import { User } from '../user';
 import { UserInput } from '../resolvers';
 import bcrypt from 'bcrypt';
 import { expect } from 'chai';
+import { createFakeAddress } from '../fake-data-generator';
+import { Address } from '../address';
 
 const authenticatedUser: UserInput = {
   name: 'Authenticated User',
@@ -21,15 +23,39 @@ describe('Testing user query', () => {
   });
 
   afterEach(async () => {
+    await dataSource.getRepository(Address).delete({});
     await dataSource.getRepository(User).delete({});
   });
 
-  it('should return user info succesfully', async () => {
+  it('should return user info succesfully, relating address to user manually', async () => {
+    const newAddr0 = await dataSource.getRepository(Address).save(
+      await createFakeAddress(
+        {
+          street: 'Avenida Central',
+          neighborhood: 'Nova Fortaleza',
+          city: 'Fortaleza',
+          state: 'CE',
+        },
+        517,
+      ),
+    );
+
+    const newAddr1 = await dataSource.getRepository(Address).save(
+      await createFakeAddress(
+        {
+          complement: 'Apartamento 1',
+          city: 'Campinas',
+        },
+        644,
+      ),
+    );
+
     const newUser = await dataSource.getRepository(User).save({
       name: authenticatedUser.name,
       email: authenticatedUser.email,
       password: await bcrypt.hash(authenticatedUser.password, 2),
       birthDate: authenticatedUser.birthDate,
+      address: [newAddr0, newAddr1],
     });
 
     const res = await axios({
@@ -41,12 +67,22 @@ describe('Testing user query', () => {
       data: {
         query: `
               query User ($id: ID) {
-                  user(id: $id) {
-                      id
-                      name
-                      email
-                      birthDate
+                user(id: $id) {
+                  id
+                  name
+                  email
+                  birthDate
+                  address {
+                    id
+                    postalCode
+                    street
+                    streetNumber
+                    complement
+                    neighborhood
+                    city
+                    state
                   }
+                }
               }
           `,
         variables: {
@@ -59,6 +95,13 @@ describe('Testing user query', () => {
     expect(newUser.name).to.be.equal(res.data.data.user.name);
     expect(newUser.email).to.be.equal(res.data.data.user.email);
     expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
+
+    for (let i = 0; i < newUser.address.length; i++) {
+      expect(newUser.address[i]).to.be.deep.equal({
+        ...res.data.data.user.address[i],
+        id: +res.data.data.user.address[i].id,
+      });
+    }
   });
 
   it('should return auth error: missing token', async () => {
@@ -76,12 +119,22 @@ describe('Testing user query', () => {
       data: {
         query: `
               query User ($id: ID) {
-                  user(id: $id) {
-                      id
-                      name
-                      email
-                      birthDate
+                user(id: $id) {
+                  id
+                  name
+                  email
+                  birthDate
+                  address {
+                    id
+                    postalCode
+                    street
+                    streetNumber
+                    complement
+                    neighborhood
+                    city
+                    state
                   }
+                }
               }
           `,
         variables: {
@@ -112,12 +165,22 @@ describe('Testing user query', () => {
       data: {
         query: `
               query User ($id: ID) {
-                  user(id: $id) {
-                      id
-                      name
-                      email
-                      birthDate
+                user(id: $id) {
+                  id
+                  name
+                  email
+                  birthDate
+                  address {
+                    id
+                    postalCode
+                    street
+                    streetNumber
+                    complement
+                    neighborhood
+                    city
+                    state
                   }
+                }
               }
           `,
         variables: {
@@ -158,10 +221,20 @@ describe('Testing user query', () => {
         query: `
               query User ($id: ID) {
                 user(id: $id) {
+                  id
+                  name
+                  email
+                  birthDate
+                  address {
                     id
-                    name
-                    email
-                    birthDate
+                    postalCode
+                    street
+                    streetNumber
+                    complement
+                    neighborhood
+                    city
+                    state
+                  }
                 }
               }
           `,
@@ -193,12 +266,22 @@ describe('Testing user query', () => {
       data: {
         query: `
             query User ($id: ID) {
-                user(id: $id) {
-                    id
-                    name
-                    email
-                    birthDate
+              user(id: $id) {
+                id
+                name
+                email
+                birthDate
+                address {
+                  id
+                  postalCode
+                  street
+                  streetNumber
+                  complement
+                  neighborhood
+                  city
+                  state
                 }
+              }
             }
         `,
         variables: {

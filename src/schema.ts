@@ -29,12 +29,12 @@ input LoginInput {
   rememberMe: Boolean
 }
 
-
 type User {
   id: ID!
   name: String!
   email: String!
   birthDate: String
+  address: [Address]
 }
 
 input UserInput {
@@ -42,5 +42,16 @@ input UserInput {
   email: String!
   password: String!
   birthDate: String
+}
+
+type Address {
+  id: ID!
+  postalCode: String!
+  street: String!
+  streetNumber: String!
+  complement: String
+  neighborhood: String!
+  city: String!
+  state: String!
 }
 `;

@@ -28,8 +28,11 @@ export const resolvers = {
     user: async (_parent: never, args: { id: number }, context: { token: string }) => {
       await validateContext(context);
 
-      const user = await dataSource.getRepository(User).findOneBy({
-        id: args.id,
+      const user = await dataSource.getRepository(User).findOne({
+        where: {
+          id: args.id,
+        },
+        relations: ['address'],
       });
 
       if (!user) {
