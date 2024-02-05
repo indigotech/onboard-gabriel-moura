@@ -18,3 +18,4 @@ require('./create-user');
 require('./login');
 require('./user');
 require('./pagination');
+require('./address-relation');

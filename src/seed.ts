@@ -1,7 +1,7 @@
 import { initializeDbConnection } from './setup';
 import { dataSource } from './data-source';
 import { User } from './user';
-import { createFakeUser } from './fake-user-generator';
+import { createFakeUser } from './fake-data-generator';
 import dotenv from 'dotenv';
 
 dotenv.config({});
