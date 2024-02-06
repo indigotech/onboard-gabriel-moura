@@ -1,17 +1,10 @@
-import { User } from './user';
+import { User, UserInput } from './user';
 import { dataSource } from './data-source';
 import { CustomError } from './custom-error';
 import { validateStrongPassword } from './input-validation';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { validateContext } from './authentication';
-
-export interface UserInput {
-  name: string;
-  email: string;
-  password: string;
-  birthDate: string;
-}
 
 export interface LoginInput {
   email: string;
@@ -28,8 +21,11 @@ export const resolvers = {
     user: async (_parent: never, args: { id: number }, context: { token: string }) => {
       await validateContext(context);
 
-      const user = await dataSource.getRepository(User).findOneBy({
-        id: args.id,
+      const user = await dataSource.getRepository(User).findOne({
+        where: {
+          id: args.id,
+        },
+        relations: ['address'],
       });
 
       if (!user) {
@@ -62,6 +58,7 @@ export const resolvers = {
         order: {
           name: 'ASC',
         },
+        relations: ['address'],
       });
 
       const isTherePreviousUser = step > 0;

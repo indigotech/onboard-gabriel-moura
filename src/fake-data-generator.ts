@@ -27,4 +27,3 @@ export const createFakeAddress = async (address: Partial<Address>, i?: number) =
     state: address.state ?? 'SP',
   };
 };
-

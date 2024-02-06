@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { UserInput, LoginInput } from '../resolvers';
+import { LoginInput } from '../resolvers';
 import { dataSource } from '../data-source';
-import { User } from '../user';
+import { User, UserInput } from '../user';
 import { expect } from 'chai';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';

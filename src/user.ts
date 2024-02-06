@@ -18,6 +18,13 @@ export class User {
   @Column()
   birthDate: string;
 
-  @OneToMany(() => Address, (address) => address.user)
+  @OneToMany(() => Address, (address) => address.user, { cascade: true })
   address: Address[];
+}
+
+export interface UserInput {
+  name: string;
+  email: string;
+  password: string;
+  birthDate: string;
 }

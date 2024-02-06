@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { expect } from 'chai';
-import { UserInput } from '../resolvers';
 import { dataSource } from '../data-source';
-import { User } from '../user';
+import { User, UserInput } from '../user';
 import jwt from 'jsonwebtoken';
 
 const usersToTest = [
