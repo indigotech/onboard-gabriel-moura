@@ -95,6 +95,7 @@ describe('Testing user query', () => {
     expect(newUser.email).to.be.equal(res.data.data.user.email);
     expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
 
+    expect(newUser.address.length).to.be.equal(res.data.data.user.address.length);
     for (let i = 0; i < newUser.address.length; i++) {
       expect(newUser.address).to.deep.include({
         ...res.data.data.user.address[i],
