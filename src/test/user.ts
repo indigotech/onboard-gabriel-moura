@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { sign } from 'jsonwebtoken';
 import { dataSource } from '../data-source';
-import { User } from '../user';
+import { User, UserInput } from '../user';
 import { Address } from '../address';
-import { UserInput } from '../user';
 import bcrypt from 'bcrypt';
 import { expect } from 'chai';
 import { createFakeAddress } from '../fake-data-generator';
