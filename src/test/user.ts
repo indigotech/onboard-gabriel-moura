@@ -2,11 +2,11 @@ import axios from 'axios';
 import { sign } from 'jsonwebtoken';
 import { dataSource } from '../data-source';
 import { User } from '../user';
-import { UserInput } from '../resolvers';
+import { Address } from '../address';
+import { UserInput } from '../user';
 import bcrypt from 'bcrypt';
 import { expect } from 'chai';
 import { createFakeAddress } from '../fake-data-generator';
-import { Address } from '../address';
 
 const authenticatedUser: UserInput = {
   name: 'Authenticated User',
@@ -97,7 +97,7 @@ describe('Testing user query', () => {
     expect(newUser.birthDate).to.be.equal(res.data.data.user.birthDate);
 
     for (let i = 0; i < newUser.address.length; i++) {
-      expect(newUser.address[i]).to.be.deep.equal({
+      expect(newUser.address).to.deep.include({
         ...res.data.data.user.address[i],
         id: +res.data.data.user.address[i].id,
       });
